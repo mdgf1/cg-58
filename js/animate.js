@@ -10,9 +10,8 @@ var changeCameraPerspectiva = false;
 var changeCameraOrtogonal = false;
 var cameraFactor = 7;
 
-var geometry, material, mesh;
-
-var ball;
+var robo;
+var axisHelper;
 
 
 //Câmaras
@@ -78,73 +77,15 @@ function createCameraOrtogonal() {
 }
 
 
-
-
-function addTableLeg(obj, x, y, z) {
-    'use strict';
-
-    geometry = new THREE.CubeGeometry(2, 6, 2);
-    mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x, y - 3, z);
-    obj.add(mesh);
-}
-
-function addTableTop(obj, x, y, z) {
-    'use strict';
-    geometry = new THREE.CubeGeometry(60, 2, 20);
-    mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
-
-function createBall(x, y, z) {
-    'use strict';
-
-    ball = new THREE.Object3D();
-    ball.userData = { jumping: true, step: 0 };
-
-    material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-    geometry = new THREE.SphereGeometry(4, 10, 10);
-    mesh = new THREE.Mesh(geometry, material);
-
-    ball.add(mesh);
-    ball.position.set(x, y, z);
-
-    scene.add(ball);
-}
-
-
-function createTable(x, y, z) {
-    'use strict';
-
-    var table = new THREE.Object3D();
-
-    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-
-    addTableTop(table, 0, 0, 0);
-    addTableLeg(table, -25, -1, -8);
-    addTableLeg(table, -25, -1, 8);
-    addTableLeg(table, 25, -1, 8);
-    addTableLeg(table, 25, -1, -8);
-
-    scene.add(table);
-
-    table.position.x = x;
-    table.position.y = y;
-    table.position.z = z;
-}
-
 function createScene() {
     'use strict';
 
     scene = new THREE.Scene();
 
-    scene.add(new THREE.AxisHelper(10));
-
-    scene.add(new Robo());
-    createTable(0, 8, 0);
-    createBall(0, 0, 15);
-
+    axisHelper = new THREE.AxisHelper(50);
+    scene.add(axisHelper);
+    robo = new Robo();
+    scene.add(robo);
 
     createCameraPerspectiva();
 }
@@ -206,23 +147,15 @@ function onKeyDown(e) {
         break;
     case 65: //A
     case 97: //a
-        scene.traverse(function (node) {
-            if (node instanceof THREE.Mesh) {
-                node.material.wireframe = !node.material.wireframe;
-            }
-        });
+        robo.wireframes();
         break;
     case 83:  //S
     case 115: //s
-        ball.userData.jumping = !ball.userData.jumping;
+        robo.rotateHead();
         break;
     case 69:  //E
     case 101: //e
-        scene.traverse(function (node) {
-            if (node instanceof THREE.AxisHelper) {
-                node.visible = !node.visible;
-            }
-        });
+        axisHelper.visible = !axisHelper.visible;
         break;
     }
 }
@@ -231,6 +164,7 @@ function onKeyDown(e) {
 function render() {
     'use strict';
     renderer.render(scene, camera);
+    renderer.setClearColor(0xffffff, 1);
 }
 
 function init() {
@@ -258,12 +192,6 @@ function init() {
 
 function animate() {
     'use strict';
-
-    if (ball.userData.jumping) {
-        ball.userData.step += 0.04;
-        ball.position.y = Math.abs(30 * (Math.sin(ball.userData.step)));
-        ball.position.z = 15 * (Math.cos(ball.userData.step));
-    }
 
     checkCamera();
 
