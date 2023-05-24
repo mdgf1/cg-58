@@ -156,11 +156,6 @@ function onKeyDown(e) {
     case 114: //r
         headUp = true
         break;
-    case 83:  //S
-    case 115: //s
-        headUp = true
-        break;
-    
     case 68:  //D
     case 100: //d
         armsDown = true
