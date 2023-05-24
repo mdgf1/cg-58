@@ -3,15 +3,12 @@
 var scene, renderer;
 
 var camera, cameraPerspectiva, cameraTopo, cameraLateral, cameraFrontal, cameraOrtogonal;
-var changeCameraTopo = false;
-var changeCameraFrontal = false;
-var changeCameraLateral = false;
-var changeCameraPerspectiva = false;
-var changeCameraOrtogonal = false;
 var cameraFactor = 7;
 
-var robo;
+var robot;
 var axisHelper;
+
+
 
 
 //Câmaras
@@ -84,10 +81,9 @@ function createScene() {
 
     axisHelper = new THREE.AxisHelper(50);
     scene.add(axisHelper);
-    robo = new Robo();
-    scene.add(robo);
+    robot = new Robot();
+    scene.add(robot);
 
-    createCameraPerspectiva();
 }
 
 function onResize() {
@@ -131,33 +127,82 @@ function onKeyDown(e) {
     switch (e.keyCode) {
     
     case 49:   // tecla 1
-        changeCameraFrontal = true;
+        camera = cameraFrontal;
         break;
     case 50:   // tecla 2
-        changeCameraLateral = true;
+        camera = cameraLateral;
         break;
     case 51:    // tecla 3
-        changeCameraTopo = true;
+        camera = cameraTopo;
         break;
     case 52:   // tecla 4
-        changeCameraPerspectiva = true;
+        camera = cameraPerspectiva;
         break;
     case 53:   // tecla 5
-        changeCameraOrtogonal = true;
+        camera = cameraOrtogonal;
         break;
+    case 54:   // tecla 6
+        robot.wireframes();
+        break;
+
     case 65: //A
     case 97: //a
-        robo.wireframes();
+        break;
+    case 70:  //F
+    case 102: //f
+        headDown = true
+        break;
+    case 82:  //R
+    case 114: //r
+        headUp = true
         break;
     case 83:  //S
     case 115: //s
-        robo.rotateHead();
+        headUp = true
+        break;
+    
+    case 68:  //D
+    case 100: //d
+        armsDown = true
         break;
     case 69:  //E
     case 101: //e
-        axisHelper.visible = !axisHelper.visible;
+        armsUp = true
         break;
     }
+}
+
+function onKeyUp(e) {
+    'use strict';
+
+    switch (e.keyCode) {
+    
+    case 65: //A
+    case 97: //a
+        
+        break;
+    case 70:  //F
+    case 102: //f
+        headDown = false
+        break;
+    case 82:  //R
+    case 114: //r
+        headUp = false
+        break;
+    case 83:  //S
+    case 115: //s
+        break;
+
+    case 68:  //D
+    case 100: //d
+        armsDown = false
+        break;
+    case 69:  //E
+    case 101: //e
+        armsUp = false
+        break;
+    }
+    
 }
 
 
@@ -165,6 +210,11 @@ function render() {
     'use strict';
     renderer.render(scene, camera);
     renderer.setClearColor(0xffffff, 1);
+}
+
+function update() {
+    'use strict';
+    robot.move();
 }
 
 function init() {
@@ -181,21 +231,21 @@ function init() {
     createCameraFrontal();
     createCameraLateral();
     createCameraTopo();
+    createCameraPerspectiva();
 
     camera = cameraPerspectiva;
 
     render();
 
     window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
 }
 
 function animate() {
     'use strict';
 
-    checkCamera();
-
+    update();
     render();
-
     requestAnimationFrame(animate);
 }
