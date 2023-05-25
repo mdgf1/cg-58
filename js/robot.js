@@ -144,10 +144,16 @@ class Robot extends THREE.Object3D {
     
     createTrailer(){
         'use strict';
+
+        this.trailer = new THREE.Object3D();
+        this.trailer.position.set(0,0 , -torsoZ/2);
+        
         var geometry = new THREE.CubeGeometry(trailerX, trailerY, trailerZ);
-        this.materials.push(new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: false }));
-        this.trailer = new THREE.Mesh(geometry, this.materials[this.materials.length-1]);
-        this.trailer.position.set(100,100,100);
+        this.materials.push(new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: false }));
+        var trailer = new THREE.Mesh(geometry, this.materials[this.materials.length-1]);
+        trailer.position.set(0,0,-trailerZ);
+
+        this.trailer.add(trailer);
         this.add(this.trailer);
     }
 
