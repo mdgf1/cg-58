@@ -144,25 +144,38 @@ function onKeyDown(e) {
     case 54:   // tecla 6
         robot.wireframes();
         break;
-
+    
     case 65: //A
     case 97: //a
+        feetDown = true;
         break;
     case 70:  //F
     case 102: //f
-        headDown = true
+        headDown = true;
         break;
     case 82:  //R
     case 114: //r
-        headUp = true
+        headUp = true;
         break;
     case 68:  //D
     case 100: //d
-        armsDown = true
+        armsDown = true;
         break;
     case 69:  //E
     case 101: //e
-        armsUp = true
+        armsUp = true;
+        break;
+    case 81:  //Q
+    case 113: //q
+        feetUp = true;
+        break;
+    case 83:  //S
+    case 115: //s
+        legsDown = true;
+        break;
+    case 87:  //W
+    case 119: //w
+        legsUp = true;
         break;
     }
 }
@@ -174,27 +187,35 @@ function onKeyUp(e) {
     
     case 65: //A
     case 97: //a
-        
+        feetDown = false;
         break;
     case 70:  //F
     case 102: //f
-        headDown = false
+        headDown = false;
         break;
     case 82:  //R
     case 114: //r
-        headUp = false
+        headUp = false;
         break;
-    case 83:  //S
-    case 115: //s
-        break;
-
     case 68:  //D
     case 100: //d
-        armsDown = false
+        armsDown = false;
         break;
     case 69:  //E
     case 101: //e
-        armsUp = false
+        armsUp = false;
+        break;
+    case 81:  //Q
+    case 113: //q
+        feetUp = false;
+        break;
+    case 83:  //S
+    case 115: //s
+        legsDown = false;
+        break;
+    case 87:  //W
+    case 119: //w
+        legsUp = false;
         break;
     }
     
