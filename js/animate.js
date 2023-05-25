@@ -8,17 +8,14 @@ var cameraFactor = 7;
 var robot;
 var axisHelper;
 
-
-
-
 //Câmaras
 
 function createCameraPerspectiva() {
     'use strict';
     cameraPerspectiva = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
-    cameraPerspectiva.position.x = 50;
+    cameraPerspectiva.position.x = 80;
     cameraPerspectiva.position.y = 0;
-    cameraPerspectiva.position.z = 50;
+    cameraPerspectiva.position.z = 80;
     cameraPerspectiva.lookAt(scene.position);
 }
 
@@ -96,29 +93,6 @@ function onResize() {
         camera.updateProjectionMatrix();
     }
 
-}
-
-function checkCamera(){
-    if(changeCameraFrontal){
-        camera = cameraFrontal;
-        changeCameraFrontal = false;
-    }
-    else if(changeCameraLateral){
-        camera = cameraLateral;
-        changeCameraLateral = false;
-    }
-    else if(changeCameraTopo){
-        camera = cameraTopo;
-        changeCameraTopo = false;
-    }
-    else if(changeCameraPerspectiva){
-        camera = cameraPerspectiva;
-        changeCameraPerspectiva = false;
-    }
-    else if(changeCameraOrtogonal){
-        camera = cameraOrtogonal;
-        changeCameraOrtogonal = false;
-    }
 }
 
 function onKeyDown(e) {
