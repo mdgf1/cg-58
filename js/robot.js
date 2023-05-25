@@ -110,10 +110,10 @@ class Robot extends THREE.Object3D {
         var literalLeftArm = this.createMesh(new THREE.CubeGeometry(armsX, armsY, armsZ), 0x789012);
         var literalRightArm = literalLeftArm.clone();
         
-        var leftBigExaust = this.createMesh(new THREE.CubeGeometry(armsX/3, 2*armsY/3, armsZ/3), 0x890123);
+        var leftBigExaust = this.createMesh(new THREE.CylinderGeometry(armsX/6, armsX/6, 2*armsY/3, 20), 0x890123);
         var rightBigExaust = leftBigExaust.clone();
 
-        var leftSmallExaust = this.createMesh(new THREE.CubeGeometry(armsX/6, armsY/2, armsZ/6), 0x0124365);
+        var leftSmallExaust = this.createMesh(new THREE.CylinderGeometry(armsX/12, armsX/12, armsY/2, 20), 0x0124365);
         var rightSmallExaust = leftSmallExaust.clone();
 
         var leftForeArm = this.createMesh(new THREE.CubeGeometry(foreArmsX, foreArmsY, foreArmsZ), 0x123456);
