@@ -25,6 +25,10 @@ const trailerX = 34;
 const trailerY = 46;
 const trailerZ = 96;
 
+const escapeX = trailerX-12;
+const escapeY = 8;
+const escapeZ = 28;
+
 class Robot extends THREE.Object3D {
 
     robotMode = [];
@@ -148,12 +152,18 @@ class Robot extends THREE.Object3D {
         this.trailer = new THREE.Object3D();
         this.trailer.position.set(0,0 , -torsoZ/2);
         
-        var geometry = new THREE.CubeGeometry(trailerX, trailerY, trailerZ);
+        var geometry = new THREE.CubeGeometry(trailerX, trailerY, trailerZ);1
         this.materials.push(new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: false }));
         var trailer = new THREE.Mesh(geometry, this.materials[this.materials.length-1]);
         trailer.position.set(0,0,-trailerZ);
+        
+        geometry = new THREE.CubeGeometry(escapeX,escapeY,escapeZ);
+        this.materials.push(new THREE.MeshBasicMaterial({ color: 0x890123, wireframe: false }));
+        var escape = new THREE.Mesh(geometry, this.materials[this.materials.length-1]);
+        escape.position.set(0,-escapeY/2-trailerY/2,-3*trailerZ/2+escapeZ/2);
 
         this.trailer.add(trailer);
+        this.trailer.add(escape);
         this.add(this.trailer);
     }
 
