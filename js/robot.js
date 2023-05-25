@@ -21,6 +21,10 @@ const armsX = 6;
 const armsY = 18;
 const armsZ = 6;
 
+const trailerX = 34;
+const trailerY = 46;
+const trailerZ = 96;
+
 class Robot extends THREE.Object3D {
 
     robotMode = [];
@@ -28,6 +32,7 @@ class Robot extends THREE.Object3D {
     torso;
     arms;
     foreArms;
+    trailer;
     materials = [];
 
     constructor() {
@@ -135,6 +140,15 @@ class Robot extends THREE.Object3D {
         this.add(this.arms);
         this.arms.rotation.x = -Math.PI/12;
         this.foreArms.rotation.x = -Math.PI/4;
+    }
+    
+    createTrailer(){
+        'use strict';
+        var geometry = new THREE.CubeGeometry(trailerX, trailerY, trailerZ);
+        this.materials.push(new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: false }));
+        this.trailer = new THREE.Mesh(geometry, this.materials[this.materials.length-1]);
+        this.trailer.position.set(100,100,100);
+        this.add(this.trailer);
     }
 
     move() {
