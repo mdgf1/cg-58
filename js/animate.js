@@ -23,7 +23,7 @@ function createCameraTopo() {
     'use strict';
     cameraTopo = new THREE.OrthographicCamera(window.innerWidth / -cameraFactor, window.innerWidth / cameraFactor, window.innerHeight / cameraFactor, window.innerHeight / -cameraFactor, 1, 1000);
     cameraTopo.position.x = 0;
-    cameraTopo.position.y = 50;
+    cameraTopo.position.y = 30;
     cameraTopo.position.z = 0;
     cameraTopo.lookAt(scene.position);
 }
@@ -36,7 +36,7 @@ function createCameraLateral() {
                                          window.innerHeight / -cameraFactor,
                                          1,
                                          1000);
-    cameraLateral.position.x = 50;
+    cameraLateral.position.x = 30;
     cameraLateral.position.y = 0;
     cameraLateral.position.z = 0;
     cameraLateral.lookAt(scene.position);
@@ -52,7 +52,7 @@ function createCameraFrontal() {
                                          1000);
     cameraFrontal.position.x = 0;
     cameraFrontal.position.y = 0;
-    cameraFrontal.position.z = 50;
+    cameraFrontal.position.z = 30;
     cameraFrontal.lookAt(scene.position);
 }
 
@@ -64,9 +64,9 @@ function createCameraOrtogonal() {
                                          window.innerHeight / -cameraFactor,
                                          1,
                                          1000);
-    cameraOrtogonal.position.x = 50;
+    cameraOrtogonal.position.x = 30;
     cameraOrtogonal.position.y = 0;
-    cameraOrtogonal.position.z = -50;
+    cameraOrtogonal.position.z = -30;
     cameraOrtogonal.lookAt(scene.position);
 }
 

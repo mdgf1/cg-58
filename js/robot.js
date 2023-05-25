@@ -38,12 +38,14 @@ const foreLegsY = 36;
 const foreLegsZ = 10;
 
 const latcherX = 4;
-const latcherY = 4;
 const latcherZ = 1;
 
 const feetX = 10;
 const feetY = 4;
 const feetZ = 6;
+
+const weelsX = 6;
+const weelsZ = 12;
 
 class Robot extends THREE.Object3D {
 
@@ -56,6 +58,7 @@ class Robot extends THREE.Object3D {
     waist;
     legs;
     feet;
+    weels;
     materials = [];
 
     constructor() {
@@ -66,6 +69,7 @@ class Robot extends THREE.Object3D {
         this.createAbdomen();
         this.createWaist();
         this.createLegs();
+        this.createWeels();
     }
 
     createHead() {
@@ -167,11 +171,14 @@ class Robot extends THREE.Object3D {
         this.feet = new THREE.Object3D();
         this.feet.position.set(0, -waistY/4-legsY-17*foreLegsY/18, feetZ/2-legsZ/6);
 
-        var leftLeg = this.createMesh(new THREE.CubeGeometry(legsX, legsY, legsZ), 0x098765);
+        var leftLeg = new THREE.Object3D();
         var rightLeg = leftLeg.clone();
 
-        leftLeg.position.set(legsX, -legsY/2-waistY/4, -legsZ/6);
-        rightLeg.position.set(-legsX, -legsY/2-waistY/4, -legsZ/6);
+        var literalLeftLeg = this.createMesh(new THREE.CubeGeometry(legsX, legsY, legsZ), 0x098765);
+        var literalRightLeg = literalLeftLeg.clone();
+
+        literalLeftLeg.position.set(legsX, -legsY/2-waistY/4, -legsZ/6);
+        literalRightLeg.position.set(-legsX, -legsY/2-waistY/4, -legsZ/6);
         
         var leftForeLeg = this.createMesh(new THREE.CubeGeometry(foreLegsX, foreLegsY, foreLegsZ), 0x993333);
         var rightForeLeg = leftForeLeg.clone();
@@ -185,12 +192,45 @@ class Robot extends THREE.Object3D {
         leftFoot.position.set(legsX, 0, foreLegsZ/2);
         rightFoot.position.set(-legsX, 0, foreLegsZ/2);
 
+        var leftLatcher = this.createMesh(new THREE.CylinderGeometry(latcherX/2, latcherX/2, latcherZ, 20, 1, false, 0, Math.PI), 0x990000);
+        leftLatcher.rotation.x = Math.PI/2;
+        var rightLatcher = leftLatcher.clone();
+        rightLatcher.rotation.z = Math.PI;
+        leftLatcher.position.set(latcherX/4, -waistY/4-legsY-latcherX/2-foreLegsY/2, -legsZ/6-foreLegsZ/2-latcherZ/2);
+        rightLatcher.position.set(-latcherX/4, -waistY/4-legsY-latcherX/2-foreLegsY/2, -legsZ/6-foreLegsZ/2-latcherZ/2);
+
+        leftLeg.add(literalLeftLeg, leftLatcher, leftForeLeg);
+        rightLeg.add(literalRightLeg, rightLatcher, rightForeLeg);
         this.feet.add(leftFoot, rightFoot);
-        this.legs.add(leftLeg, rightLeg);
-        this.legs.add(leftForeLeg, rightForeLeg);
+        this.legs.add(leftLeg);
+        this.legs.add(rightLeg);
         this.legs.add(this.feet);
         this.add(this.legs);
 
+    }
+
+    createWeels () {
+        this.weels = new THREE.Object3D();
+        var weel1 = this.createMesh(new THREE.CylinderGeometry(weelsZ/2, weelsZ/2, weelsX, 20), 0x000055);
+        weel1.rotation.z = Math.PI/2;
+        var weel2 = weel1.clone(), weel3 = weel1.clone();
+        var weel4 = weel1.clone(), weel5 = weel1.clone();
+        var weel6 = weel1.clone();
+
+        weel1.position.set(waistX/2+weelsX/2 , -torsoY/2-abdomenY-3*waistY/4, weelsZ/12);
+        weel2.position.set(-waistX/2-weelsX/2 , -torsoY/2-abdomenY-3*waistY/4, weelsZ/12);
+
+        weel3.position.set(waistX/2+weelsX/2 , -torsoY-legsY-waistY/4, weelsZ/12-legsZ/6);
+        weel4.position.set(-waistX/2-weelsX/2 , -torsoY-legsY-waistY/4, weelsZ/12-legsZ/6);
+
+        weel5.position.set(+waistX/2+weelsX/2 , -legsY-waistY/4-foreLegsY+weelsZ/2, weelsZ/12-legsZ/6);
+        weel6.position.set(-waistX/2-weelsX/2 , -legsY-waistY/4-foreLegsY+weelsZ/2, weelsZ/12-legsZ/6);
+
+
+        this.legs.children[0].add(weel3, weel5);
+        this.legs.children[1].add(weel4, weel6);
+        this.weels.add(weel1, weel2);
+        this.add(this.weels);
     }
 
     move() {
@@ -307,10 +347,26 @@ class Robot extends THREE.Object3D {
         if (legsUp && legsDown)
             return;
         else if (legsUp && this.legs.rotation.x > 0) {
-            this.legs.rotation.x -= Math.PI/86;      
+            this.legs.rotation.x -= Math.PI/86;     
+            if (this.legs.children[0].position.x < 0) {
+                this.legs.children[0].position.x += 0.1;
+                this.legs.children[1].position.x -= 0.1;
+                this.feet.children[0].position.x += 0.1;
+                this.feet.children[1].position.x -= 0.1;
+            } 
         }
-        else if(legsDown && this.legs.rotation.x < Math.PI/2) {
-            this.legs.rotation.x += Math.PI/86;
+        else if(legsDown) {
+            if (this.legs.rotation.x < Math.PI/2)
+                this.legs.rotation.x += Math.PI/86;
+            console.log(this.legs.children[0])
+            if (this.legs.children[0].position.x > -legsX/6) {
+                this.legs.children[0].position.x -= 0.1;
+                this.legs.children[1].position.x += 0.1;
+                this.feet.children[0].position.x -= 0.1;
+                this.feet.children[1].position.x += 0.1;
+
+            }
+
         }
         if (this.legs.rotation.x > Math.PI/2)   
             this.legs.rotation.x = Math.PI/2;
