@@ -35,7 +35,7 @@ const legsZ = 6;
 
 const trailerX = 34;
 const trailerY = 46;
-const trailerZ = 96;
+const trailerZ = 76;
 
 const escapeX = trailerX-12;
 const escapeY = 8;
@@ -69,6 +69,7 @@ class Robot extends THREE.Object3D {
     weels;
     trailer;
     materials = [];
+    robotBoundingBox;
 
     constructor() {
         super();
@@ -158,28 +159,6 @@ class Robot extends THREE.Object3D {
         this.arms.rotation.x = -Math.PI/12;
         this.foreArms.rotation.x = -Math.PI/4;
     }
-    
-
-    createTrailer(){
-        'use strict';
-
-        this.trailer = new THREE.Object3D();
-        this.trailer.position.set(0,0 , -torsoZ/2);
-        
-        var geometry = new THREE.CubeGeometry(trailerX, trailerY, trailerZ);1
-        this.materials.push(new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: false }));
-        var trailer = new THREE.Mesh(geometry, this.materials[this.materials.length-1]);
-        trailer.position.set(0,0,-trailerZ);
-        
-        geometry = new THREE.CubeGeometry(escapeX,escapeY,escapeZ);
-        this.materials.push(new THREE.MeshBasicMaterial({ color: 0x890123, wireframe: false }));
-        var escape = new THREE.Mesh(geometry, this.materials[this.materials.length-1]);
-        escape.position.set(0,-escapeY/2-trailerY/2,-3*trailerZ/2+escapeZ/2);
-
-        this.trailer.add(trailer);
-        this.trailer.add(escape);
-        this.add(this.trailer);
-    }
 
     createAbdomen() {
         'use strict';
@@ -257,95 +236,13 @@ class Robot extends THREE.Object3D {
         weel5.position.set(+waistX/2+weelsX/2 , -legsY-waistY/4-foreLegsY+weelsZ/2, weelsZ/12-legsZ/6);
         weel6.position.set(-waistX/2-weelsX/2 , -legsY-waistY/4-foreLegsY+weelsZ/2, weelsZ/12-legsZ/6);
 
-
         this.legs.children[0].add(weel3, weel5);
         this.legs.children[1].add(weel4, weel6);
         this.weels.add(weel1, weel2);
         this.add(this.weels);
     }
 
-    createAbdomen() {
-        'use strict';
-        this.abdomen = this.createMesh(new THREE.CubeGeometry(abdomenX, abdomenY, abdomenZ), 0x154919);
-        this.abdomen.position.set(0, -torsoY/2-abdomenY/2, 0);
-        this.add(this.abdomen);
-    }
     
-    createWaist() {
-        'use strict';
-        this.waist = this.createMesh(new THREE.CubeGeometry(waistX, waistY, waistZ), 0x519491);
-        this.waist.position.set(0, -torsoY/2-abdomenY-waistY/2, (abdomenZ-waistZ)/2);
-        this.add(this.waist);
-    }
-
-    createLegs () {
-        'use strict';
-        this.legs = new THREE.Object3D();
-        this.legs.position.set(0, -torsoY/2-abdomenY-3*waistY/4, legsZ/6);
-        this.feet = new THREE.Object3D();
-        this.feet.position.set(0, -waistY/4-legsY-17*foreLegsY/18, feetZ/2-legsZ/6);
-
-        var leftLeg = new THREE.Object3D();
-        var rightLeg = leftLeg.clone();
-
-        var literalLeftLeg = this.createMesh(new THREE.CubeGeometry(legsX, legsY, legsZ), 0x098765);
-        var literalRightLeg = literalLeftLeg.clone();
-
-        literalLeftLeg.position.set(legsX, -legsY/2-waistY/4, -legsZ/6);
-        literalRightLeg.position.set(-legsX, -legsY/2-waistY/4, -legsZ/6);
-        
-        var leftForeLeg = this.createMesh(new THREE.CubeGeometry(foreLegsX, foreLegsY, foreLegsZ), 0x993333);
-        var rightForeLeg = leftForeLeg.clone();
-
-        leftForeLeg.position.set(legsX, -legsY-waistY/4-foreLegsY/2, -legsZ/6);
-        rightForeLeg.position.set(-legsX, -legsY-waistY/4-foreLegsY/2, -legsZ/6);
-
-        var leftFoot = this.createMesh(new THREE.CubeGeometry(feetX, feetY, feetZ), 0x990099);
-        var rightFoot = leftFoot.clone();
-
-        leftFoot.position.set(legsX, 0, foreLegsZ/2);
-        rightFoot.position.set(-legsX, 0, foreLegsZ/2);
-
-        var leftLatcher = this.createMesh(new THREE.CylinderGeometry(latcherX/2, latcherX/2, latcherZ, 20, 1, false, 0, Math.PI), 0x990000);
-        leftLatcher.rotation.x = Math.PI/2;
-        var rightLatcher = leftLatcher.clone();
-        rightLatcher.rotation.z = Math.PI;
-        leftLatcher.position.set(latcherX/4, -waistY/4-legsY-latcherX/2-foreLegsY/2, -legsZ/6-foreLegsZ/2-latcherZ/2);
-        rightLatcher.position.set(-latcherX/4, -waistY/4-legsY-latcherX/2-foreLegsY/2, -legsZ/6-foreLegsZ/2-latcherZ/2);
-
-        leftLeg.add(literalLeftLeg, leftLatcher, leftForeLeg);
-        rightLeg.add(literalRightLeg, rightLatcher, rightForeLeg);
-        this.feet.add(leftFoot, rightFoot);
-        this.legs.add(leftLeg);
-        this.legs.add(rightLeg);
-        this.legs.add(this.feet);
-        this.add(this.legs);
-
-    }
-
-    createWeels () {
-        this.weels = new THREE.Object3D();
-        var weel1 = this.createMesh(new THREE.CylinderGeometry(weelsZ/2, weelsZ/2, weelsX, 20), 0x000055);
-        weel1.rotation.z = Math.PI/2;
-        var weel2 = weel1.clone(), weel3 = weel1.clone();
-        var weel4 = weel1.clone(), weel5 = weel1.clone();
-        var weel6 = weel1.clone();
-
-        weel1.position.set(waistX/2+weelsX/2 , -torsoY/2-abdomenY-3*waistY/4, weelsZ/12);
-        weel2.position.set(-waistX/2-weelsX/2 , -torsoY/2-abdomenY-3*waistY/4, weelsZ/12);
-
-        weel3.position.set(waistX/2+weelsX/2 , -torsoY-legsY-waistY/4, weelsZ/12-legsZ/6);
-        weel4.position.set(-waistX/2-weelsX/2 , -torsoY-legsY-waistY/4, weelsZ/12-legsZ/6);
-
-        weel5.position.set(+waistX/2+weelsX/2 , -legsY-waistY/4-foreLegsY+weelsZ/2, weelsZ/12-legsZ/6);
-        weel6.position.set(-waistX/2-weelsX/2 , -legsY-waistY/4-foreLegsY+weelsZ/2, weelsZ/12-legsZ/6);
-
-
-        this.legs.children[0].add(weel3, weel5);
-        this.legs.children[1].add(weel4, weel6);
-        this.weels.add(weel1, weel2);
-        this.add(this.weels);
-    }
 
     move() {
         if (headDown || headUp)
@@ -472,7 +369,6 @@ class Robot extends THREE.Object3D {
         else if(legsDown) {
             if (this.legs.rotation.x < Math.PI/2)
                 this.legs.rotation.x += Math.PI/86;
-            console.log(this.legs.children[0])
             if (this.legs.children[0].position.x > -legsX/6) {
                 this.legs.children[0].position.x -= 0.1;
                 this.legs.children[1].position.x += 0.1;
