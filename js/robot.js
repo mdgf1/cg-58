@@ -4,6 +4,7 @@ var torsoUp = false, torsoDown = false;
 var armsUp = false, armsDown = false, armsRotated = false;
 var legsUp = false, legsDown = false;
 var feetUp = false, feetDown = false;
+var truck = false;
 
 const headX = 6;
 const headY = 6;
@@ -69,7 +70,6 @@ class Robot extends THREE.Object3D {
     weels;
     trailer;
     materials = [];
-    robotBoundingBox;
 
     constructor() {
         super();
@@ -242,9 +242,14 @@ class Robot extends THREE.Object3D {
         this.add(this.weels);
     }
 
-    
-
     move() {
+        if (this.head.rotation.x == -Math.PI
+            && this.foreArms.children[0].position.z == -foreArmsZ/2+armsY-torsoY
+            && this.legs.rotation.x == Math.PI/2
+            && this.feet.rotation.x == Math.PI/2)
+            truck = true;
+        else
+            truck = false;
         if (headDown || headUp)
             this.rotateHead();
         if (armsDown || armsUp)
@@ -264,8 +269,8 @@ class Robot extends THREE.Object3D {
             this.head.rotation.x -= Math.PI/48;
         if (this.head.rotation.x > 0)   
             this.head.rotation.x = 0;
-        if (this.head.rotation.x < -Math.PI)   
-            this.head.rotation.x = -Math.PI; 
+        if (this.head.rotation.x < -Math.PI)
+            this.head.rotation.x = -Math.PI;
     }
 
     // too cursed to go back now
@@ -281,7 +286,7 @@ class Robot extends THREE.Object3D {
                 armsRotated = false;
                 // left arm = this.arms.children[0]
                 if (this.arms.children[0].position.x < 0) {
-                    this.arms.children[0].position.x += 0.5;
+                    this.arms.children[0].position.add(new THREE.Vector3(0.5, 0, 0));
                     this.arms.children[1].position.x -= 0.5;
                     armsRotated = true;
                 } if (this.arms.children[0].position.z < 0) {
@@ -400,6 +405,7 @@ class Robot extends THREE.Object3D {
     }
 
     wireframes() {
+        
         for (var i = 0; i < this.materials.length; i++) {
             this.materials[i].wireframe = !this.materials[i].wireframe;
         }

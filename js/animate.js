@@ -10,6 +10,7 @@ var robotBoundingBox, trailerBoundingBox;
 var axisHelper;
 var collision = false;
 var left = false, right = false, up = false, down = false;
+var wireframes = false, changedWireframes = false;
 
 //Câmaras
 
@@ -73,6 +74,13 @@ function createCameraOrtogonal() {
     cameraOrtogonal.lookAt(scene.position);
 }
 
+function checkCollision() {
+    if (truck)
+        console.log("true");
+    tX_min = -torsoX/2-0;
+    tX_max = 0;
+    tZ = 0;
+}
 
 function createScene() {
     'use strict';
@@ -175,15 +183,14 @@ function onKeyDown(e) {
         camera = cameraTopo;
         break;
     case 52:   // tecla 4
-        camera = cameraPerspectiva;
-        break;
-    case 53:   // tecla 5
         camera = cameraOrtogonal;
         break;
-    case 54:   // tecla 6
-        robot.wireframes();
+    case 53:   // tecla 5
+        camera = cameraPerspectiva;
         break;
-    
+    case 54:   // tecla 6
+        wireframes = true;
+        break;
     case 65: //A
     case 97: //a
         feetDown = true;
@@ -239,6 +246,11 @@ function onKeyUp(e) {
     case 40:
         down = false;
         break;
+
+    case 54:   // tecla 6
+        wireframes = false;
+        changedWireframes = false;
+        break;
     case 65: //A
     case 97: //a
         feetDown = false;
@@ -286,8 +298,12 @@ function update() {
     robot.move();
     if (up || left || right || down)
         moveTrailer();
+    if (!changedWireframes && wireframes) {
+        robot.wireframes();
+        changedWireframes = true;
+    }
     collision = robotBoundingBox.intersectsBox(trailerBoundingBox);
-    if (collision) 
+    if (checkCollision()) 
         console.log("here");
 }
 
