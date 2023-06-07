@@ -3,21 +3,56 @@
 //////////////////////
 var scene, renderer;
 
-var camera, cameraPerspectiva, cameraTopo, cameraLateral, cameraFrontal, cameraOrtogonal;
+var camera, orbitalControls;
 var cameraFactor = 7;
 
-var robot, trailer;
-var robotBoundingBox, trailerBoundingBox;
+var ovni;
+var skyDome;
 var axisHelper;
 var collision = false, alreadyInside = false;
 var intersectZ = false, intersectX = false;
-var left = false, right = false, up = false, down = false;
 var wireframes = false, changedWireframes = false;
 
+//////////////////////
+/* CREATE CAMERA(S) */
+//////////////////////
+
+function createCameraPerspectiv() {
+    'use strict';
+    var cameraPerspectiva = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+    cameraPerspectiva.position.x = 100;
+    cameraPerspectiva.position.y = 100;
+    cameraPerspectiva.position.z = 100;
+    cameraPerspectiva.lookAt(scene.position);
+    camera = cameraPerspectiva;
+}
 
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
+
+function createSkyDome() {
+    'use strict';
+    
+    const geometry = new THREE.SphereGeometry(400, 32, 16, 0, Math.PI ); 
+    var loader  = new THREE.TextureLoader()
+    var material = new THREE.MeshBasicMaterial({ color: 0x00002B, side: THREE.BackSide});
+    skyDome = new THREE.Mesh(geometry, material);
+    skyDome.rotation.x = -Math.PI/2;
+    scene.add(skyDome);
+}
+
+function createGround() {
+    'use strict';
+    const geometry = new THREE.PlaneGeometry(1000, 1000);
+    var loader  = new THREE.TextureLoader()
+    var heightMap = loader.load( 'js/heighmap.png' );
+    var material = new THREE.MeshPhongMaterial({ displacementMap: heightMap, emissiveIntensity: 1, side: THREE.DoubleSide, color: 0x00A619});
+    var ground = new THREE.Mesh(geometry, material);
+    ground.rotation.x = -Math.PI/2;
+    scene.add(ground);
+}
+
 function createScene() {
     'use strict';
 
@@ -25,192 +60,46 @@ function createScene() {
 
     axisHelper = new THREE.AxisHelper(50);
     scene.add(axisHelper);
-    robot = new Robot();
-    trailer = createTrailer();
-    scene.add(robot);
-    scene.add(trailer);
-
+    ovni = new Ovni();
+    ovni.scale.set(2, 2, 2);
+    scene.add(ovni);
+    createSkyDome();
+    createGround();
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 }
 
-//////////////////////
-/* CREATE CAMERA(S) */
-//////////////////////
-
-function createCameraPerspectiva() {
-    'use strict';
-    cameraPerspectiva = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
-    cameraPerspectiva.position.x = 80;
-    cameraPerspectiva.position.y = 0;
-    cameraPerspectiva.position.z = 80;
-    cameraPerspectiva.lookAt(scene.position);
-}
-
-function createCameraTopo() {
-    'use strict';
-    cameraTopo = new THREE.OrthographicCamera(window.innerWidth*1.5 / -cameraFactor, window.innerWidth*1.5 / cameraFactor, window.innerHeight*1.5 / cameraFactor, window.innerHeight*1.5 / -cameraFactor, 1, 1000);
-    cameraTopo.position.x = 0;
-    cameraTopo.position.y = 100;
-    cameraTopo.position.z = 0;
-    cameraTopo.lookAt(scene.position);
-}
-
-function createCameraLateral() {
-    'use strict';
-    cameraLateral = new THREE.OrthographicCamera(window.innerWidth*1 / -cameraFactor,
-                                         window.innerWidth*1 / cameraFactor,
-                                         window.innerHeight*1 / cameraFactor,
-                                         window.innerHeight*1 / -cameraFactor,
-                                         1,
-                                         1000);
-    cameraLateral.position.x = 100;
-    cameraLateral.position.y = 0;
-    cameraLateral.position.z = 0;
-    cameraLateral.lookAt(scene.position);
-}
-
-function createCameraFrontal() {
-    'use strict';
-    cameraFrontal = new THREE.OrthographicCamera(window.innerWidth / -cameraFactor,
-                                         window.innerWidth / cameraFactor,
-                                         window.innerHeight / cameraFactor,
-                                         window.innerHeight / -cameraFactor,
-                                         1,
-                                         1000);
-    cameraFrontal.position.x = 0;
-    cameraFrontal.position.y = 0;
-    cameraFrontal.position.z = 100;
-    cameraFrontal.lookAt(scene.position);
-}
-
-function createCameraOrtogonal() {
-    'use strict';
-    cameraOrtogonal = new THREE.OrthographicCamera(window.innerWidth / -cameraFactor,
-                                         window.innerWidth / cameraFactor,
-                                         window.innerHeight / cameraFactor,
-                                         window.innerHeight / -cameraFactor,
-                                         1,
-                                         1000);
-    cameraOrtogonal.position.x = 120;
-    cameraOrtogonal.position.y = 0;
-    cameraOrtogonal.position.z = -120;
-    cameraOrtogonal.lookAt(scene.position);
-}
 
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
-function createMesh(geometry, color) {
-    robot.materials.push(new THREE.MeshBasicMaterial({ color: color, wireframe: false }));
-    return new THREE.Mesh(geometry, robot.materials[robot.materials.length-1]);
-}
 
-function createTrailer() {
-    'use strict';
-
-    trailer = new THREE.Object3D();
-    trailer.position.set(0, -torsoY/2-abdomenY, -torsoZ*2);
-
-    var weel1 = createMesh(new THREE.CylinderGeometry(weelsZ/2, weelsZ/2, weelsX, 20), 0x000055);
-    weel1.rotation.z = Math.PI/2;
-    var weel2 = weel1.clone(), weel3 = weel1.clone();
-    var weel4 = weel1.clone();
-    
-    var trailer1 = createMesh(new THREE.BoxGeometry(trailerX, trailerY, trailerZ), 0x000000);
-    trailer1.position.set(0, trailerY/2, -trailerZ);
-    
-    var exaust = createMesh(new THREE.BoxGeometry(escapeX,escapeY,escapeZ), 0x890123);
-    exaust.position.set(0, -escapeY/2, -3*trailerZ/2+escapeZ/2);
-
-    weel1.position.set(-waistX/2-weelsX/2 , -3*waistY/4, -3*trailerZ/2+weelsZ/2);
-    weel2.position.set(+waistX/2+weelsX/2 , -3*waistY/4, -3*trailerZ/2+weelsZ/2);
-
-    weel3.position.set(-waistX/2-weelsX/2 , -3*waistY/4, -3*trailerZ/2+3*weelsZ/2+1);
-    weel4.position.set(+waistX/2+weelsX/2 , -3*waistY/4, -3*trailerZ/2+3*weelsZ/2+1);
-
-    trailer.add(weel1, weel2, weel3, weel4);
-    trailer.add(trailer1, exaust);
-    return trailer;
-}
 
 //////////////////////
 /* CHECK COLLISIONS */
 //////////////////////
 function checkCollisions(){
-    'use strict';
-    if (!intersectX || !intersectZ)
-        alreadyInside = false;
-    var truckX_min = -torsoX/2-armsX/6;
-    var truckX_max = torsoX/2+armsX/6;
-    var truckZ_min = torsoZ/2-waistZ-legsY-foreLegsY-feetZ;
-    var truckZ_max = torsoZ/2;
-    var trailerX_min = trailer.position.x-trailerX/2;
-    var trailerX_max = trailer.position.x+trailerX/2;
-    var trailerZ_min = trailer.position.z-3*trailerZ/2;
-    var trailerZ_max = trailer.position.z-trailerZ/2;
-
-    if (truckZ_min <= trailerZ_max && truckZ_max >= trailerZ_min)
-        intersectZ = true;
-    else 
-        intersectZ = false;
-    if (truckX_min <= trailerX_max && truckX_max >= trailerX_min)
-        intersectX = true;
-    else 
-        intersectX = false;
-    if (intersectX && intersectZ && truck) {
-        if (alreadyInside)
-            return false;
-        return true;
-    }
-    return false;
+    
 }
 
 ///////////////////////
 /* HANDLE COLLISIONS */
 ///////////////////////
-function handleCollisions(){
-    'use strict';
-    trailer.position.add(new THREE.Vector3((-trailer.position.x/10)*0.3, 0, 0));
-    trailer.position.add(new THREE.Vector3(0, 0, (-trailer.position.z+torsoZ)*0.05));
-    if (Math.abs(trailer.position.z-torsoZ) < 0.5)
-        trailer.position.z = torsoZ;
-    if (Math.abs(trailer.position.x) < 0.5)
-        trailer.position.x = 0;
-    if (trailer.position.x == 0 && trailer.position.z == torsoZ)
-        alreadyInside = true;
 
-}
 
 ////////////
 /* UPDATE */
 ////////////
 
-function moveTrailer() {
-    if (up)
-        trailer.position.add(new THREE.Vector3(0, 0, 0.5));
-    if (down)
-        trailer.position.add(new THREE.Vector3(0, 0, -0.5));
-    if (right)
-        trailer.position.add(new THREE.Vector3(0.5, 0, 0));
-    if (left)
-        trailer.position.add(new THREE.Vector3(-0.5, 0, 0));
-}
-
 function update() {
     'use strict';
-    collision = checkCollisions();
-    if (!collision) {
-        robot.move();
-        if (up || left || right || down)
-            moveTrailer();
-    }
+    orbitalControls.update();
+    ovni.move();
     
     if (!changedWireframes && wireframes) {
-        robot.wireframes();
+        ovni.wireframes();
         changedWireframes = true;
     }
-    if (collision)
-        handleCollisions();
 }
 
 /////////////
@@ -234,21 +123,9 @@ function init() {
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
-
     createScene();
-
-    createCameraOrtogonal();
-    createCameraFrontal();
-    createCameraLateral();
-    createCameraTopo();
-    createCameraPerspectiva();
-
-    robotBoundingBox = new THREE.Box3().setFromObject(robot);
-    trailerBoundingBox = new THREE.Box3().setFromObject(trailer);
-
-    camera = cameraPerspectiva;
-
-    render();
+    createCameraPerspectiv();
+    orbitalControls = new THREE.OrbitControls(camera, renderer.domElement);
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
@@ -307,21 +184,7 @@ function onKeyDown(e) {
         down = true;
         break;
     
-    case 49:   // tecla 1
-        camera = cameraFrontal;
-        break;
-    case 50:   // tecla 2
-        camera = cameraLateral;
-        break;
-    case 51:    // tecla 3
-        camera = cameraTopo;
-        break;
-    case 52:   // tecla 4
-        camera = cameraOrtogonal;
-        break;
-    case 53:   // tecla 5
-        camera = cameraPerspectiva;
-        break;
+    
     case 54:   // tecla 6
         wireframes = true;
         break;
