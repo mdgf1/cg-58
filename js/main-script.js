@@ -6,8 +6,7 @@ var scene, renderer;
 var camera, orbitalControls;
 var cameraFactor = 7;
 
-var ovni;
-var skyDome;
+var ovni, moon, skyDome, ground;
 var axisHelper;
 var collision = false, alreadyInside = false;
 var intersectZ = false, intersectX = false;
@@ -20,9 +19,9 @@ var wireframes = false, changedWireframes = false;
 function createCameraPerspectiv() {
     'use strict';
     var cameraPerspectiva = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
-    cameraPerspectiva.position.x = 100;
-    cameraPerspectiva.position.y = 100;
-    cameraPerspectiva.position.z = 100;
+    cameraPerspectiva.position.x = 125;
+    cameraPerspectiva.position.y = 125;
+    cameraPerspectiva.position.z = 125;
     cameraPerspectiva.lookAt(scene.position);
     camera = cameraPerspectiva;
 }
@@ -31,41 +30,15 @@ function createCameraPerspectiv() {
 /* CREATE SCENE(S) */
 /////////////////////
 
-function createSkyDome() {
-    'use strict';
-    
-    const geometry = new THREE.SphereGeometry(400, 32, 16, 0, Math.PI ); 
-    var loader  = new THREE.TextureLoader()
-    var material = new THREE.MeshBasicMaterial({ color: 0x00002B, side: THREE.BackSide});
-    skyDome = new THREE.Mesh(geometry, material);
-    skyDome.rotation.x = -Math.PI/2;
-    scene.add(skyDome);
-}
 
-function createGround() {
-    'use strict';
-    const geometry = new THREE.PlaneGeometry(1000, 1000);
-    var loader  = new THREE.TextureLoader()
-    var heightMap = loader.load( 'js/heighmap.png' );
-    var material = new THREE.MeshPhongMaterial({ displacementMap: heightMap, emissiveIntensity: 1, side: THREE.DoubleSide, color: 0x00A619});
-    var ground = new THREE.Mesh(geometry, material);
-    ground.rotation.x = -Math.PI/2;
-    scene.add(ground);
-}
 
 function createScene() {
     'use strict';
 
     scene = new THREE.Scene();
 
-    axisHelper = new THREE.AxisHelper(50);
-    scene.add(axisHelper);
-    ovni = new Ovni();
-    ovni.scale.set(2, 2, 2);
-    scene.add(ovni);
-    createSkyDome();
-    createGround();
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    
+    scene.add(new THREE.AmbientLight(0xffffff, 0.3));
 }
 
 
@@ -73,7 +46,19 @@ function createScene() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
-
+function createObjects() {
+    axisHelper = new THREE.AxisHelper(50);
+    scene.add(axisHelper);
+    ovni = new Ovni();
+    ovni.scale.set(2, 2, 2);
+    moon = new Moon();
+    skyDome = new SkyDome();
+    ground = new Ground();
+    
+    scene.add(skyDome);
+    scene.add(ovni);
+    scene.add(moon);
+}
 
 //////////////////////
 /* CHECK COLLISIONS */
@@ -124,6 +109,7 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
     createScene();
+    createObjects();
     createCameraPerspectiv();
     orbitalControls = new THREE.OrbitControls(camera, renderer.domElement);
 
