@@ -6,7 +6,7 @@ var scene, renderer;
 var camera, orbitalControls;
 var cameraFactor = 7;
 
-var ovni, moon, skyDome, ground;
+var ovni, moon, skyDome, ground, house;
 var axisHelper;
 var collision = false, alreadyInside = false;
 var intersectZ = false, intersectX = false;
@@ -30,248 +30,6 @@ function createCameraPerspectiv() {
 /* CREATE SCENE(S) */
 /////////////////////
 
-function createSkyDome() {
-    'use strict';
-    
-    const geometry = new THREE.SphereGeometry(400, 32, 16, 0, Math.PI ); 
-    var loader  = new THREE.TextureLoader()
-    var material = new THREE.MeshBasicMaterial({ color: 0x00002B, side: THREE.BackSide});
-    skyDome = new THREE.Mesh(geometry, material);
-    skyDome.rotation.x = -Math.PI/2;
-    scene.add(skyDome);
-}
-
-function createCasa(){
-// Create materials
-    const wallMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
-    const windowDoorMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-    const roofMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500 });
-
-    /***********************************************************
-                            WALLS
-     **********************************************************/
-    const geoWalls = new THREE.BufferGeometry();
-
-    const vertWalls = new Float32Array(
-        [
-        //front
-            -10.0, 0.0, 5.0,
-            10.0, 0.0, 5.0,
-            10.0, 11.0, 5.0,
-            -10.0, 11.0, 5.0,
-        //back
-            -10.0, 0.0, -5.0,
-            10.0, 0.0, -5.0,
-            10.0, 11.0, -5.0,
-            -10.0, 11.0, -5.0,
-        //left
-            -10.0, 0.0, -5.0,
-            -10.0, 0.0, 5.0,
-            -10.0, 11.0, 5.0,
-            -10.0, 11.0, -5.0,
-        //right
-            10.0, 0.0, 5.0,
-            10.0, 0.0, -5.0,
-            10.0, 11.0, -5.0,
-            10.0, 11.0, 5.0,
-        //top
-            -10.0, 11.0, 5.0,
-            10.0, 11.0, 5.0,
-            10.0, 11.0, -5.0,
-            -10.0, 11.0, -5.0,
-        //bottom
-            -10.0, 0.0, -5.0,
-            10.0, 0.0, -5.0,
-            10.0, 0.0, 5.0,
-            -10.0, 0.0, 5.0,
-        ] );
-    const indWalls = [
-        //front
-        0, 1, 2, 2, 3, 0,
-        //back
-        6, 5 , 4 , 4 , 7 ,6,
-        //left
-        8 , 9, 10, 10, 11, 8,
-        //right
-        12, 13, 14, 14, 15, 12,
-        //top
-        16, 17, 18, 18 , 19, 16,
-        //bottom
-        20, 21, 22, 22, 23, 20];
-
-    geoWalls.setAttribute('position', new THREE.BufferAttribute(vertWalls, 3));
-
-    geoWalls.setIndex( indWalls );
-    geoWalls.computeVertexNormals();
-    /***********************************************************
-                            ROOF
-     **********************************************************/
-    const geoRoof = new THREE.BufferGeometry();
-
-    const vertRoof = new Float32Array(
-        [
-            //top
-            -10.0, 11.0, 5.0,
-            10.0, 11.0, 5.0,
-            10.0, 11.0, -5.0,
-            -10.0, 11.0, -5.0,
-            -10.0, 16.0, 0.0,
-            10.0,  16.0, 0.0,
-        ] );
-    const indRoof = [
-        //front
-        0, 1, 5, 5, 4, 0,
-        //back
-        2, 3 , 4 , 4 , 5 ,2,
-        //left
-        3, 0, 4,
-        //right
-        1, 2, 5
-        ];
-
-    geoRoof.setAttribute('position', new THREE.BufferAttribute(vertRoof, 3));
-
-    geoRoof.setIndex( indRoof );
-    geoRoof.computeVertexNormals();
-    /***********************************************************
-                            Door
-     **********************************************************/
-    const geoDoor = new THREE.BufferGeometry();
-
-    const vertDoor = new Float32Array(
-        [
-            -7, 0.0, 5.001,
-            -5, 0.0, 5.001,
-            -5, 4,   5.001,
-            -7, 4,   5.001,
-        ] );
-    const indDoor = [
-        //front
-        0, 1, 2, 2, 3, 0
-    ];
-
-    geoDoor.setAttribute('position', new THREE.BufferAttribute(vertDoor , 3));
-
-    geoDoor.setIndex( indDoor );
-    geoDoor.computeVertexNormals();
-    /***********************************************************
-                        Windows
-     **********************************************************/
-    const geoWindows = new THREE.BufferGeometry();
-
-    const vertWindows = new Float32Array(
-        [
-            //Front Left window
-            -8, 7.0, 5.001,
-            -4, 7.0, 5.001,
-            -4, 10.0,   5.001,
-            -8, 10.0,   5.001,
-            //Front Right window
-            0, 7.0, 5.001,
-            7, 7.0, 5.001,
-            7, 10.0,   5.001,
-            0, 10.0,   5.001,
-            //Right Window
-            10.001, 8.0, 4.0,
-            10.001, 8.0, 0.0,
-            10.001, 10.0, 0.0,
-            10.001, 10.0, 4.0,
-        ] );
-    const indWindows = [
-        //front left
-        0, 1, 2, 2, 3, 0,
-        //front right
-        4, 5, 6, 6, 7, 4,
-        8, 9 , 10, 10 ,11 , 8
-    ];
-
-    geoWindows.setAttribute('position', new THREE.BufferAttribute(vertWindows , 3));
-
-    geoWindows.setIndex( indWindows );
-    geoWindows.computeVertexNormals();
-    /***********************************************************
-                        Chimney
-     **********************************************************/
-    const geoChimney = new THREE.BufferGeometry();
-
-    const vertChimney = new Float32Array(
-        [
-        //front
-            4.0, 11.0, 4.0,
-            6.0, 11.0, 4.0,
-            6.0, 17.0, 4.0,
-            4.0, 17.0, 4.0,
-        //back
-            4.0, 11.0, 2.0,
-            6.0, 11.0, 2.0,
-            6.0, 17.0, 2.0,
-            4.0, 17.0, 2.0,
-        //left
-            4.0, 11.0, 2.0,
-            4.0, 11.0, 4.0,
-            4.0, 17.0, 4.0,
-            4.0, 17.0, 2.0,
-        //right
-            6.0, 11.0, 4.0,
-            6.0, 11.0, 2.0,
-            6.0, 17.0, 2.0,
-            6.0, 17.0, 4.0,
-        //top
-            4.0, 17.0, 4.0,
-            6.0, 17.0, 4.0,
-            6.0, 17.0, 2.0,
-            4.0, 17.0, 2.0,
-        //bottom
-            4.0, 11.0, 2.0,
-            6.0, 11.0, 2.0,
-            6.0, 11.0, 4.0,
-            4.0, 11.0, 4.0,
-        ] );
-    const indChimney = [
-        //front
-        0, 1, 2, 2, 3, 0,
-        //back
-        6, 5 , 4 , 4 , 7 ,6,
-        //left
-        8 , 9, 10, 10, 11, 8,
-        //right
-        12, 13, 14, 14, 15, 12,
-        //top
-        16, 17, 18, 18 , 19, 16,
-        //bottom
-        20, 21, 22, 22, 23, 20];
-
-    geoChimney.setAttribute('position', new THREE.BufferAttribute(vertChimney, 3));
-
-    geoChimney.setIndex( indChimney );
-    geoChimney.computeVertexNormals();
-// Create meshes for each element
-    const walls = new THREE.Mesh(geoWalls, wallMaterial);
-    const roof = new THREE.Mesh(geoRoof, roofMaterial);
-    const door = new THREE.Mesh(geoDoor, windowDoorMaterial);
-    const windows = new THREE.Mesh(geoWindows, windowDoorMaterial);
-    const chimney = new THREE.Mesh(geoChimney, windowDoorMaterial);
-
-
-// Add elements to the scene
-    scene.add(walls);
-    scene.add(roof);
-    scene.add(door);
-    scene.add(windows);
-    scene.add(chimney);
-}
-
-function createGround() {
-    'use strict';
-    const geometry = new THREE.PlaneGeometry(1000, 1000);
-    var loader  = new THREE.TextureLoader()
-    var heightMap = loader.load( 'js/heighmap.png' );
-    var material = new THREE.MeshPhongMaterial({ displacementMap: heightMap, emissiveIntensity: 1, side: THREE.DoubleSide, color: 0x00A619});
-    var ground = new THREE.Mesh(geometry, material);
-    ground.rotation.x = -Math.PI/2;
-    scene.add(ground);
-}
-
 function createScene() {
     'use strict';
 
@@ -279,12 +37,6 @@ function createScene() {
 
     axisHelper = new THREE.AxisHelper(50);
     scene.add(axisHelper);
-    ovni = new Ovni();
-    ovni.scale.set(2, 2, 2);
-    scene.add(ovni);
-    createCasa();
-    createSkyDome();
-    createGround();
     scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 }
 
@@ -301,9 +53,12 @@ function createObjects() {
     moon = new Moon();
     skyDome = new SkyDome();
     ground = new Ground();
-    
+    house = new House();
+
+    scene.add(house);
     scene.add(skyDome);
     scene.add(ovni);
+    scene.add(ground);
     scene.add(moon);
 }
 
@@ -330,6 +85,7 @@ function update() {
     
     if (!changedWireframes && wireframes) {
         ovni.wireframes();
+        house.wireframes();
         changedWireframes = true;
     }
 }
