@@ -14,8 +14,41 @@ class SkyDome extends THREE.Object3D {
         'use strict';
         
         const geometry = new THREE.SphereGeometry(skyDomeXYZ, 32, 16, 0, Math.PI); 
-        var skyDome = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: 0x00002B, side: THREE.BackSide}));
+        var skyDome = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({map: this.createSkyTexture(), side: THREE.BackSide}));
         skyDome.rotation.x = -Math.PI/2;
         this.add(skyDome);
+    }
+
+    createSkyTexture() {
+        'use strict';
+        const textureSize = 200;
+        var canvas = document.createElement('canvas');
+        canvas.width = textureSize;
+        canvas.height = textureSize;
+        var context = canvas.getContext('2d');
+      
+        // Create the gradient background
+        var gradient = context.createLinearGradient(0, 0, 0, textureSize);
+        gradient.addColorStop(0, '#00008b'); // Dark blue
+        gradient.addColorStop(1, '#8a2be2'); // Dark violet
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, textureSize, textureSize);
+      
+        // Draw the stars
+        var starRadius = 1;
+        var numStars = 600;
+        for (var i = 0; i < numStars; i++) {
+          var x = Math.random() * textureSize;
+          var y = Math.random() * textureSize;
+          context.fillStyle = '#ffffff';
+          context.beginPath();
+          context.arc(x, y, starRadius, 0, 2 * Math.PI);
+          context.fill();
+        }
+      
+        var texture = new THREE.Texture(canvas);
+        texture.needsUpdate = true;
+      
+        return texture;
     }
 }
