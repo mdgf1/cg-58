@@ -8,16 +8,17 @@ class Ground extends THREE.Object3D {
 
     createGround() {
         'use strict';
-        const geometry = new THREE.PlaneGeometry(800, 800);
-        var loader  = new THREE.TextureLoader()
-        var heightMap = new THREE.TextureLoader().load( 'heightmap.png' );
-        var ground = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
+        var heightMap = new THREE.TextureLoader().load('https://web.tecnico.ulisboa.pt/~ist199290/heightmap.png');
+        heightMap.wrapS = heightMap.wrapT = THREE.RepeatWrapping;
+        const geometry = new THREE.PlaneGeometry(800, 800, 300, 300);
+        const material = new THREE.MeshPhongMaterial({
             displacementMap : heightMap,
             map: this.createFieldTexture(),
-            displacementScale : 10,
-            side: THREE.DoubleSide}));
-        ground.rotation.x = -Math.PI/2;
-        scene.add(ground);
+            displacementScale : 50,});
+        var ground = new THREE.Mesh(geometry, material);
+        ground.rotation.x = Math.PI / 2;
+        ground.rotation.y = Math.PI ;
+        this.add(ground);
     }
 
     createFieldTexture() {
@@ -29,22 +30,18 @@ class Ground extends THREE.Object3D {
         var context = canvas.getContext('2d');
       
         // Draw the background color
-        context.fillStyle = '#96FF7C';
+        context.fillStyle = '#037d50';
         context.fillRect(0, 0, textureSize, textureSize);
       
-        // Draw the circles
-        var colors = ['#ffffff', '#ffff00', '#c8a2c8', '#add8e6'];
-        var circleRadius = 1;
-        var numCircles = 600;
-        var color;
-        var x, y;
-        for (var i = 0; i < numCircles; i++) {
-          x = Math.random() * textureSize;
-          y = Math.random() * textureSize;
-          color = colors[i % colors.length];
+        // Draw the flowers
+        var colors = ['#ff1493', '#8014ff', '#FFFF33', '#add8e6'];
+        for (var i = 0; i < 600; i++) {
+          var x = Math.random() * textureSize;
+          var y = Math.random() * textureSize;
+          var color = colors[i % colors.length];
           context.fillStyle = color;
           context.beginPath();
-          context.arc(x, y, circleRadius, 0, 2 * Math.PI);
+          context.arc(x, y, 1, 0, 3 * Math.PI);
           context.fill();
         }
       

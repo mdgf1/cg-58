@@ -29,20 +29,20 @@ class SkyDome extends THREE.Object3D {
       
         // Create the gradient background
         var gradient = context.createLinearGradient(0, 0, 0, textureSize);
-        gradient.addColorStop(0, '#00008b'); // Dark blue
-        gradient.addColorStop(1, '#8a2be2'); // Dark violet
+        gradient.addColorStop(0, '#8014ff'); // Dark blue
+        gradient.addColorStop(1, '#0c0674'); // Dark violet
         context.fillStyle = gradient;
         context.fillRect(0, 0, textureSize, textureSize);
       
         // Draw the stars
-        var starRadius = 1;
-        var numStars = 600;
+        var starRadius = 0.8;
+        var numStars = 900;
         for (var i = 0; i < numStars; i++) {
           var x = Math.random() * textureSize;
           var y = Math.random() * textureSize;
           context.fillStyle = '#ffffff';
           context.beginPath();
-          context.arc(x, y, starRadius, 0, 2 * Math.PI);
+          context.arc(x, y, starRadius, 0, 5 * Math.PI);
           context.fill();
         }
       
