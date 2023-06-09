@@ -9,6 +9,57 @@ class House extends THREE.Object3D {
         this.createCasa();
     }
 
+
+    equalVector(a,b){
+        if( Math.abs( a[0] - b[0]) < 0.0001 && Math.abs(a[1] - b[1]) < 0.001 && Math.abs(a[2] - b[2] ) < 0.001)
+            return true;
+        return false;
+    }
+    sumVector(a,b){
+        return [a[0]+b[0], a[1]+b[1], a[2]+b[2]];
+    }
+    createGeometryRectangle(a,b,c,d, vertices, indices, normals){
+
+
+        const size = []
+        const magnitudex = Math.sqrt((b[0]-a[0])**2 + (b[1]-a[1])**2 + (b[2]-a[2])**2);
+        const segmentx = [(b[0]-a[0])/Math.ceil(magnitudex) , (b[1]-a[1]) / Math.ceil(magnitudex) , (b[2]-a[2])/Math.ceil(magnitudex)];
+        const magnitudey = Math.sqrt((c[0]-a[0])**2 + (c[1]-a[1])**2 + (c[2]-a[2])**2);
+        const segmenty = [(c[0]-a[0])/Math.ceil(magnitudey), (c[1]-a[1]) / Math.ceil(magnitudey) , (c[2]-a[2])/Math.ceil(magnitudey)];
+        // generate vertices, normals and color data for a simple grid geometry
+        let startIndices = vertices.length/3;
+        let segmentsx = 0;
+        let segmentsy = 0;
+
+
+
+        for ( let j = a; !this.equalVector(j,b); j= this.sumVector(j,segmentx) )
+            segmentsx++;
+        for ( let i = a; !this.equalVector(i,c); i = this.sumVector(i,segmenty))
+            segmentsy++;
+
+        for ( let i = a, indi =0; indi <= segmentsy; i = this.sumVector(i,segmenty), indi++) {
+            for ( let j = a, indj = 0; indj <= segmentsx; j= this.sumVector(j,segmentx), indj++ ) {
+                vertices.push(i[0] + j[0]-a[0] , i[1]+j[1]-a[1], i[2]+j[2]-a[2] );
+                normals.push( 0, 0, 1 );
+            }
+        }
+        // generate indices (data for element array buffer)
+        for ( let i = a, indi = 0; indi < segmentsy; i = this.sumVector(i,segmenty), indi++) {
+            for ( let j = a, indj = 0; indj < segmentsx; j = this.sumVector(j,segmentx),indj++ ) {
+                const v1 = indi * (segmentsx+1) + (indj + 1);
+                const v2 = indi * (segmentsx+1) + indj;
+                const v3 = (indi + 1) * (segmentsx+1) + indj;
+                const v4 = (indi + 1) * (segmentsx+1) + (indj + 1);
+                indices.push(startIndices + v1,startIndices + v2,startIndices + v4); // face one
+                indices.push(startIndices + v2,startIndices + v3,startIndices + v4); // face two
+            }
+        }
+        if(a[1] == 16)
+            console.log(a,b,c,d),console.log(vertices),console.log(indices);
+
+    }
+
     createCasa(){
 
         // Create materials
@@ -34,201 +85,243 @@ class House extends THREE.Object3D {
                                 WALLS
             **********************************************************/
         const geoWalls = new THREE.BufferGeometry();
-    
-        const vertWalls = new Float32Array(
-            [
-            //front
-                -10.0, 0.0, 5.0,
-                10.0, 0.0, 5.0,
-                10.0, 11.0, 5.0,
-                -10.0, 11.0, 5.0,
-            //back
-                -10.0, 0.0, -5.0,
-                10.0, 0.0, -5.0,
-                10.0, 11.0, -5.0,
-                -10.0, 11.0, -5.0,
-            //left
-                -10.0, 0.0, -5.0,
-                -10.0, 0.0, 5.0,
-                -10.0, 11.0, 5.0,
-                -10.0, 11.0, -5.0,
-            //right
-                10.0, 0.0, 5.0,
-                10.0, 0.0, -5.0,
-                10.0, 11.0, -5.0,
-                10.0, 11.0, 5.0,
-            //top
-                -10.0, 11.0, 5.0,
-                10.0, 11.0, 5.0,
-                10.0, 11.0, -5.0,
-                -10.0, 11.0, -5.0,
-            //bottom
-                -10.0, 0.0, -5.0,
-                10.0, 0.0, -5.0,
-                10.0, 0.0, 5.0,
-                -10.0, 0.0, 5.0,
-            ] );
-        const indWalls = [
-            //front
-            0, 1, 2, 2, 3, 0,
-            //back
-            6, 5 , 4 , 4 , 7 ,6,
-            //left
-            8 , 9, 10, 10, 11, 8,
-            //right
-            12, 13, 14, 14, 15, 12,
-            //top
-            16, 17, 18, 18 , 19, 16,
-            //bottom
-            20, 21, 22, 22, 23, 20];
-    
-        geoWalls.setAttribute('position', new THREE.BufferAttribute(vertWalls, 3));
-    
+        const vertWalls = []
+        const indWalls = []
+        const normWalls = [];
+
+        //front
+        this.createGeometryRectangle([-10.0, 11.0, 5.0],
+            [10.0, 11.0, 5.0],
+            [-10.0, 10.0, 5.0],
+            [10.0, 10.0, 5.0],
+                vertWalls,
+                indWalls,
+                normWalls);
+        this.createGeometryRectangle([-10.0, 10.0, 5.0],
+            [-8.0, 10.0, 5.0],
+            [-10.0, 7.0, 5.0],
+            [-8.0, 7.0, 5.0],
+            vertWalls,
+            indWalls,
+            normWalls);
+        this.createGeometryRectangle([-4.0, 10.0, 5.0],
+            [0.0, 10.0, 5.0],
+            [-4.0, 7.0, 5.0],
+            [0.0, 7.0, 5.0],
+            vertWalls,
+            indWalls,
+            normWalls);
+        this.createGeometryRectangle([7.0, 10.0, 5.0],
+            [10.0, 10.0, 5.0],
+            [7.0, 7.0, 5.0],
+            [10.0, 7.0, 5.0],
+            vertWalls,
+            indWalls,
+            normWalls);
+        this.createGeometryRectangle([-10.0, 7.0, 5.0],
+            [10.0, 7.0, 5.0],
+            [-10.0, 4.0, 5.0],
+            [10.0, 4.0, 5.0],
+            vertWalls,
+            indWalls,
+            normWalls);
+        this.createGeometryRectangle([-10.0, 4.0, 5.0],
+            [-7.0, 4.0, 5.0],
+            [-10.0, 0.0, 5.0],
+            [-7.0, 0.0, 5.0],
+            vertWalls,
+            indWalls,
+            normWalls);
+        this.createGeometryRectangle([-5.0, 4.0, 5.0],
+            [10.0, 4.0, 5.0],
+            [-5.0, 0.0, 5.0],
+            [10.0, 0.0, 5.0],
+            vertWalls,
+            indWalls,
+            normWalls);
+        //back
+        this.createGeometryRectangle([10.0, 11.0, -5.0],
+            [-10.0, 11.0, -5.0],
+            [10.0, 0.0, -5.0],
+            [-10.0, 0.0, -5.0],
+            vertWalls,
+            indWalls,
+            normWalls);
+        //left
+        this.createGeometryRectangle([-10.0, 11.0, -5.0],
+            [-10.0, 11.0, 5.0],
+            [-10.0, 0.0, -5.0],
+            [-10.0, 0.0, 5.0],
+            vertWalls,
+            indWalls,
+            normWalls);
+        //right
+        this.createGeometryRectangle([10.0, 11.0, 5.0],
+            [10.0, 11.0, -5.0],
+            [10.0, 10.0, 5.0],
+            [10.0, 10.0, -5.0],
+            vertWalls,
+            indWalls,
+            normWalls);
+        this.createGeometryRectangle([10.0, 10.0, 5.0],
+            [10.0, 10.0, 4.0],
+            [10.0, 8.0, 5.0],
+            [10.0, 8.0, 4.0],
+            vertWalls,
+            indWalls,
+            normWalls);
+        this.createGeometryRectangle([10.0, 10.0, 0.0],
+            [10.0, 10.0, -5.0],
+            [10.0, 8.0, 0.0],
+            [10.0, 8.0, 0.0],
+            vertWalls,
+            indWalls,
+            normWalls);
+        this.createGeometryRectangle([10.0, 8.0, 5.0],
+            [10.0, 8.0, -5.0],
+            [10.0, 0.0, 5.0],
+            [10.0, 0.0, -5.0],
+            vertWalls,
+            indWalls,
+            normWalls);
+
         geoWalls.setIndex( indWalls );
-        geoWalls.computeVertexNormals();
+        geoWalls.setAttribute( 'position', new THREE.Float32BufferAttribute( vertWalls, 3 ) );
+        geoWalls.setAttribute( 'normal', new THREE.Float32BufferAttribute( normWalls, 3 ) );
         /***********************************************************
                                 ROOF
             **********************************************************/
         const geoRoof = new THREE.BufferGeometry();
     
-        const vertRoof = new Float32Array(
-            [
-                //top
-                -10.0, 11.0, 5.0,
-                10.0, 11.0, 5.0,
-                10.0, 11.0, -5.0,
-                -10.0, 11.0, -5.0,
-                -10.0, 16.0, 0.0,
-                10.0,  16.0, 0.0,
-            ] );
-        const indRoof = [
-            //front
-            0, 1, 5, 5, 4, 0,
-            //back
-            2, 3 , 4 , 4 , 5 ,2,
-            //left
-            3, 0, 4,
-            //right
-            1, 2, 5
-            ];
-    
-        geoRoof.setAttribute('position', new THREE.BufferAttribute(vertRoof, 3));
-    
+        const vertRoof = [];
+        const indRoof = [];
+        const normRoof =[];
+
+
+        this.createGeometryRectangle([-10.0, 16.0, 0.0],
+            [10.0, 16.0, 0.0],
+            [-10.0, 11.0, 5.0],
+            [10.0, 11.0, 5.0],
+            vertRoof,
+            indRoof,
+            normRoof);
+        this.createGeometryRectangle([10.0, 16.0, 0.0],
+            [-10.0, 16.0, 0.0],
+            [10.0, 11.0, -5.0],
+            [-10.0, 11.0, -5.0],
+            vertRoof,
+            indRoof,
+            normRoof);
+
         geoRoof.setIndex( indRoof );
-        geoRoof.computeVertexNormals();
+        geoRoof.setAttribute( 'position', new THREE.Float32BufferAttribute( vertRoof, 3 ) );
+        geoRoof.setAttribute( 'normal', new THREE.Float32BufferAttribute( normRoof, 3 ) );
         /***********************************************************
                                 Door
             **********************************************************/
         const geoDoor = new THREE.BufferGeometry();
-    
-        const vertDoor = new Float32Array(
-            [
-                -7, 0.0, 5.001,
-                -5, 0.0, 5.001,
-                -5, 4,   5.001,
-                -7, 4,   5.001,
-            ] );
-        const indDoor = [
-            //front
-            0, 1, 2, 2, 3, 0
-        ];
-    
-        geoDoor.setAttribute('position', new THREE.BufferAttribute(vertDoor , 3));
-    
+
+        const vertDoor = [];
+        const indDoor = [];
+        const normDoor = [];
+        this.createGeometryRectangle([-7.0, 4.0, 5.0],
+            [-5.0, 4.0, 5.0],
+            [-7.0, 0.0, 5.0],
+            [-5.0, 0.0, 5.0],
+            vertDoor,
+            indDoor,
+            normDoor);
+
         geoDoor.setIndex( indDoor );
-        geoDoor.computeVertexNormals();
+        geoDoor.setAttribute( 'position', new THREE.Float32BufferAttribute( vertDoor, 3 ) );
+        geoDoor.setAttribute( 'normal', new THREE.Float32BufferAttribute( normDoor, 3 ) );
         /***********************************************************
                             Windows
             **********************************************************/
         const geoWindows = new THREE.BufferGeometry();
     
-        const vertWindows = new Float32Array(
-            [
-                //Front Left window
-                -8, 7.0, 5.001,
-                -4, 7.0, 5.001,
-                -4, 10.0,   5.001,
-                -8, 10.0,   5.001,
-                //Front Right window
-                0, 7.0, 5.001,
-                7, 7.0, 5.001,
-                7, 10.0,   5.001,
-                0, 10.0,   5.001,
-                //Right Window
-                10.001, 8.0, 4.0,
-                10.001, 8.0, 0.0,
-                10.001, 10.0, 0.0,
-                10.001, 10.0, 4.0,
-            ] );
-        const indWindows = [
-            //front left
-            0, 1, 2, 2, 3, 0,
-            //front right
-            4, 5, 6, 6, 7, 4,
-            8, 9 , 10, 10 ,11 , 8
-        ];
-    
-        geoWindows.setAttribute('position', new THREE.BufferAttribute(vertWindows , 3));
-    
+        const vertWindows = [];
+        const indWindows = [];
+        const normWindows = [];
+        this.createGeometryRectangle([-8.0, 10.0, 5.0],
+            [-4.0, 10.0, 5.0],
+            [-8.0, 7.0, 5.0],
+            [-4.0, 7.0, 5.0],
+            vertWindows,
+            indWindows,
+            normWindows);
+        this.createGeometryRectangle([0.0, 10.0, 5.0],
+            [7.0, 10.0, 5.0],
+            [0.0, 7.0, 5.0],
+            [7.0, 7.0, 5.0],
+            vertWindows,
+            indWindows,
+            normWindows);
+        this.createGeometryRectangle([10.0, 10.0, 4.0],
+            [10.0, 10.0, 0.0],
+            [10.0, 8.0, 4.0],
+            [10.0, 8.0, 0.0],
+            vertWindows,
+            indWindows,
+            normWindows);
+
         geoWindows.setIndex( indWindows );
-        geoWindows.computeVertexNormals();
+        geoWindows.setAttribute( 'position', new THREE.Float32BufferAttribute( vertWindows, 3 ) );
+        geoWindows.setAttribute( 'normal', new THREE.Float32BufferAttribute( normWindows, 3 ) );
         /***********************************************************
                             Chimney
             **********************************************************/
         const geoChimney = new THREE.BufferGeometry();
-    
-        const vertChimney = new Float32Array(
-            [
-            //front
-                4.0, 11.0, 4.0,
-                6.0, 11.0, 4.0,
-                6.0, 17.0, 4.0,
-                4.0, 17.0, 4.0,
-            //back
-                4.0, 11.0, 2.0,
-                6.0, 11.0, 2.0,
-                6.0, 17.0, 2.0,
-                4.0, 17.0, 2.0,
-            //left
-                4.0, 11.0, 2.0,
-                4.0, 11.0, 4.0,
-                4.0, 17.0, 4.0,
-                4.0, 17.0, 2.0,
-            //right
-                6.0, 11.0, 4.0,
-                6.0, 11.0, 2.0,
-                6.0, 17.0, 2.0,
-                6.0, 17.0, 4.0,
-            //top
-                4.0, 17.0, 4.0,
-                6.0, 17.0, 4.0,
-                6.0, 17.0, 2.0,
-                4.0, 17.0, 2.0,
-            //bottom
-                4.0, 11.0, 2.0,
-                6.0, 11.0, 2.0,
-                6.0, 11.0, 4.0,
-                4.0, 11.0, 4.0,
-            ] );
-        const indChimney = [
-            //front
-            0, 1, 2, 2, 3, 0,
-            //back
-            6, 5 , 4 , 4 , 7 ,6,
-            //left
-            8 , 9, 10, 10, 11, 8,
-            //right
-            12, 13, 14, 14, 15, 12,
-            //top
-            16, 17, 18, 18 , 19, 16,
-            //bottom
-            20, 21, 22, 22, 23, 20];
-    
-        geoChimney.setAttribute('position', new THREE.BufferAttribute(vertChimney, 3));
-    
-        geoChimney.setIndex( indChimney );
-        geoChimney.computeVertexNormals();
 
+        const vertChimney = [];
+        const indChimney= [];
+        const normChimney = [];
+        //front
+        this.createGeometryRectangle([4.0, 17.0, 4.0],
+            [6.0, 17.0, 4.0],
+            [4.0, 11.0, 4.0],
+            [6.0, 11.0, 4.0],
+            vertChimney,
+            indChimney,
+            normChimney);
+        //back
+        this.createGeometryRectangle([6.0, 17.0, 2.0],
+            [4.0, 17.0, 2.0],
+            [6.0, 11.0, 2.0],
+            [4.0, 11.0, 2.0],
+            vertChimney,
+            indChimney,
+            normChimney);
+        //left
+        this.createGeometryRectangle([4.0, 17.0, 2.0],
+            [4.0, 17.0, 4.0],
+            [4.0, 11.0, 2.0],
+            [4.0, 11.0, 4.0],
+            vertChimney,
+            indChimney,
+            normChimney);
+        //right
+        this.createGeometryRectangle([6.0, 11.0, 2.0],
+            [6.0, 11.0, 4.0],
+            [6.0, 17.0, 2.0],
+            [6.0, 17.0, 4.0],
+            vertChimney,
+            indChimney,
+            normChimney);
+        //top
+        this.createGeometryRectangle([4.0, 17.0, 2.0],
+            [6.0, 17.0, 2.0],
+            [4.0, 17.0, 4.0],
+            [6.0, 17.0, 4.0],
+            vertChimney,
+            indChimney,
+            normChimney);
+
+
+        geoChimney.setIndex( indChimney );
+        geoChimney.setAttribute( 'position', new THREE.Float32BufferAttribute( vertChimney, 3 ) );
+        geoChimney.setAttribute( 'normal', new THREE.Float32BufferAttribute( normChimney, 3 ) );
+    
         // Create meshes for each element
         const walls = new THREE.Mesh(geoWalls, this.wallMaterials[0]);
         const roof = new THREE.Mesh(geoRoof, this.roofMaterials[0]);
