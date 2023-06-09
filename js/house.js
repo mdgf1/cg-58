@@ -206,6 +206,13 @@ class House extends THREE.Object3D {
         const normRoof =[];
 
 
+        vertRoof.push(-10 , 16, 0,
+            -10, 11, -5,
+            -10, 11, 5);
+        vertRoof.push(10 , 16, 0,
+            10, 11, 5,
+            10, 11, -5);
+        indRoof.push(0,1,2,3,4,5);
         this.createGeometryRectangle([-10.0, 16.0, 0.0],
             [10.0, 16.0, 0.0],
             [-10.0, 11.0, 5.0],
