@@ -10,7 +10,7 @@ var ovni, moon, skyDome, ground, house;
 var axisHelper;
 var wireframes = false, changedWireframes = false;
 var material0 = false, material1 = false, material2 = false, material3 = false, changedMaterial = false;
-var bigLightOff = false, bigLightsOn = false;
+var bigLightOff = false, bigLightOn = false;
 
 //////////////////////
 /* CREATE CAMERA(S) */
@@ -37,7 +37,6 @@ function createScene() {
 
     axisHelper = new THREE.AxisHelper(50);
     scene.add(axisHelper);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 }
 
 
@@ -60,6 +59,8 @@ function createObjects() {
     scene.add(ovni);
     scene.add(ground);
     scene.add(moon);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+
 }
 
 //////////////////////
@@ -85,7 +86,12 @@ function update() {
     if (!changedMaterial && (material0 || material1 || material2 || material3)) {
         ovni.changeMaterials();
         house.changeMaterials();
+        moon.changeMaterials();
         changedMaterial = true;
+    }
+
+    if (bigLightOff || bigLightOn) {
+        ovni.changeBigLight();
     }
 
     if (!changedWireframes && wireframes) {
@@ -184,6 +190,10 @@ function onKeyDown(e) {
     case 101: //e
         material3 = true;
         break;
+    case 80:  //P
+    case 112: //p
+        bigLightOn = true;
+        break;
     case 81:  //Q
     case 113: //q
         material1 = true;
@@ -235,6 +245,10 @@ function onKeyUp(e) {
     case 101: //e
         material3 = false;
         changedMaterial = false
+        break;
+    case 80:  //P
+    case 112: //p
+        bigLightOn = false;
         break;
     case 81:  //Q
     case 113: //q

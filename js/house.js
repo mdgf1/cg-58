@@ -68,24 +68,24 @@ class House extends THREE.Object3D {
 
         // Create materials
         var color = 0xF5F5DC;
-        this.wallMaterials.push(new THREE.MeshBasicMaterial({color: color}));
-        this.wallMaterials.push(new THREE.MeshLambertMaterial({color: color}));
-        this.wallMaterials.push(new THREE.MeshPhongMaterial({color: color}));
-        this.wallMaterials.push(new THREE.MeshToonMaterial({color: color}));
+        this.wallMaterials.push(new THREE.MeshBasicMaterial({color: color, side: THREE.DoubleSide}));
+        this.wallMaterials.push(new THREE.MeshLambertMaterial({color: color, side: THREE.DoubleSide}));
+        this.wallMaterials.push(new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide}));
+        this.wallMaterials.push(new THREE.MeshToonMaterial({color: color, side: THREE.DoubleSide}));
         this.wallMaterials.push(this.wallMaterials[2]);
 
         color = 0x0000ff;
-        this.windowDoorMaterials.push(new THREE.MeshBasicMaterial({color: color}));
-        this.windowDoorMaterials.push(new THREE.MeshLambertMaterial({color: color}));
-        this.windowDoorMaterials.push(new THREE.MeshPhongMaterial({color: color}));
-        this.windowDoorMaterials.push(new THREE.MeshToonMaterial({color: color}));
+        this.windowDoorMaterials.push(new THREE.MeshBasicMaterial({color: color, side: THREE.DoubleSide}));
+        this.windowDoorMaterials.push(new THREE.MeshLambertMaterial({color: color, side: THREE.DoubleSide}));
+        this.windowDoorMaterials.push(new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide}));
+        this.windowDoorMaterials.push(new THREE.MeshToonMaterial({color: color, side: THREE.DoubleSide}));
         this.windowDoorMaterials.push(this.windowDoorMaterials[2]);
 
         color = 0xffa500;
-        this.roofMaterials.push(new THREE.MeshBasicMaterial({color: color}));
-        this.roofMaterials.push(new THREE.MeshLambertMaterial({color: color}));
-        this.roofMaterials.push(new THREE.MeshPhongMaterial({color: color}));
-        this.roofMaterials.push(new THREE.MeshToonMaterial({color: color}));
+        this.roofMaterials.push(new THREE.MeshBasicMaterial({color: color, side: THREE.DoubleSide}));
+        this.roofMaterials.push(new THREE.MeshLambertMaterial({color: color, side: THREE.DoubleSide}));
+        this.roofMaterials.push(new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide}));
+        this.roofMaterials.push(new THREE.MeshToonMaterial({color: color, side: THREE.DoubleSide}));
         this.roofMaterials.push(this.roofMaterials[2]);
     
         /***********************************************************

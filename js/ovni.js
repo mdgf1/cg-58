@@ -18,6 +18,7 @@ class Ovni extends THREE.Object3D {
     cockPit;
     bigLight;
     smallLights;
+    spotlight;
     bodyMaterials = [];
     cockPitMaterials = [];
     bigLightMaterials = [];
@@ -72,13 +73,14 @@ class Ovni extends THREE.Object3D {
         this.bigLightMaterials.push(new THREE.MeshToonMaterial({color: color}));
         this.bigLightMaterials.push(this.bigLightMaterials[2]);
         this.bigLight.add(new THREE.Mesh(new THREE.CylinderGeometry(bigLightXZ/2, bigLightXZ/2, bigLightY, 40), this.bigLightMaterials[2]));
+
+        this.spotlight = new THREE.SpotLight(0xFFFFFF, 4, 100, Math.PI/10, 0.5, 2);
+        this.spotlight.position.set(0, -bigLightY/2, 0);
+        this.spotlight.target.position.set(0, -bigLightY, 0);
+        this.bigLight.add(this.spotlight);
+        this.bigLight.add(this.spotlight.target);
         this.add(this.bigLight);
 
-        var spotlight = new THREE.SpotLight(0xFFFFFF, 4, 100, Math.PI/10, 0.5);
-        spotlight.position.set(0, -bigLightY/2, 0);
-        spotlight.target.position.set(0, -bigLightY, 0);
-        this.bigLight.add(spotlight);
-        this.bigLight.add(spotlight.target);
     }
     createSmallLights() {
         'use strict';
@@ -100,7 +102,15 @@ class Ovni extends THREE.Object3D {
         rightLight.position.set(bigLightXZ, 0, 0);
         frontLight.position.set(0, 0, bigLightXZ);
         backLight.position.set(0, 0, -bigLightXZ);
-        this.smallLights.add(leftLight, rightLight, frontLight, backLight);
+        var leftPointLight = new THREE.PointLight( color, 0.5, 20 );
+        var rightPointLight = leftPointLight.clone();
+        var frontPointLight = leftPointLight.clone();
+        var backPointLight = leftPointLight.clone();
+        leftPointLight.position.set(-bigLightXZ, 0, 0 );
+        rightPointLight.position.set(bigLightXZ, 0, 0 );
+        frontPointLight.position.set(0, 0, bigLightXZ );
+        backPointLight.position.set(0, 0, -bigLightXZ );
+        this.smallLights.add(leftLight, rightLight, frontLight, backLight, leftPointLight, rightPointLight, frontPointLight, backPointLight);
         this.add(this.smallLights);
     }
 
@@ -157,6 +167,14 @@ class Ovni extends THREE.Object3D {
             this.smallLights.children[i].material = this.smallLightsMaterials[4];
         }
     }
+
+    changeBigLight() {
+        if (bigLightOn) 
+            this.spotlight.intensity = 4;
+        else if (bigLightOff)
+            this.spotlight.intensity = 0;
+    }
+
     wireframes() {
         
         for (var i = 0; i < this.bodyMaterials.length - 1; i++) {
