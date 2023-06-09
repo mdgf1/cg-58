@@ -7,6 +7,7 @@ var camera, orbitalControls;
 var cameraFactor = 7;
 
 var ovni, moon, skyDome, ground, house;
+var trees = [];
 var axisHelper;
 var wireframes = false, changedWireframes = false;
 var material0 = false, material1 = false, material2 = false, material3 = false, changedMaterial = false;
@@ -53,7 +54,15 @@ function createObjects() {
     skyDome = new SkyDome();
     ground = new Ground();
     house = new House();
-
+    for (var i = 0; i < 5; i++)
+        trees.push(new Tree());
+    trees[0].position.set(-70, 5, 70);
+    trees[1].position.set(-20, 7, -50);
+    trees[2].position.set(40, 10, -50);
+    trees[3].position.set(0, 5, 150);
+    trees[4].position.set(60, 5, 30);
+    for (var i = 0; i < 5; i++)
+        scene.add(trees[i]);
     scene.add(house);
     scene.add(skyDome);
     scene.add(ovni);
@@ -86,6 +95,9 @@ function update() {
     if (!changedMaterial && (material0 || material1 || material2 || material3)) {
         ovni.changeMaterials();
         house.changeMaterials();
+        moon.changeMaterials();
+        for (var i = 0; i < trees.length; i++)
+            trees[i].changeMaterials();
         moon.changeMaterials();
         changedMaterial = true;
     }

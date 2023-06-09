@@ -2,15 +2,14 @@
 var left = false, right = false, up = false, down = false;
 
 // Consts
-const bodyXZ = 21;
-const bodyY = 9;
+const trunkX = 6;
+const trunkY = 12;
 
-const cockPitXYZ = 8;
+const smallTrunksX = 3;
+const smallTrunksY = 14;
 
-const bigLightXZ = 8;
-const bigLightY = 6;
-
-const smallLightXYZ = 2;
+const smallBranchX = 10;
+const smallBranchY = 4;
 
 class Tree extends THREE.Object3D {
 
@@ -25,14 +24,14 @@ class Tree extends THREE.Object3D {
         super();
         this.createMainTrunk();
         this.createSmallTrunks();
-        this.createSmallBranchs();
+        this.createSmallBranches();
     }
 
     createMainTrunk() {
         'use strict';
         this.mainTrunk = new THREE.Object3D();
-        var geometry = new THREE.SphereGeometry(1);
-        geometry.scale(bodyXZ/2, bodyY/2, bodyXZ/2);
+        var geometry = new THREE.CylinderGeometry(trunkX/2, trunkX/2, trunkY, 30);
+
         var color = 0x654321;
         this.mainTrunkMaterials.push(new THREE.MeshBasicMaterial({color: color}));
         this.mainTrunkMaterials.push(new THREE.MeshLambertMaterial({color: color}));
@@ -40,6 +39,7 @@ class Tree extends THREE.Object3D {
         this.mainTrunkMaterials.push(new THREE.MeshToonMaterial({color: color}));
         this.mainTrunkMaterials.push(this.mainTrunkMaterials[2]);
         this.mainTrunk.add(new THREE.Mesh(geometry, this.mainTrunkMaterials[2]));
+        this.mainTrunk.position.set(0, trunkY/2, 0);
         this.add(this.mainTrunk);
     }
 
@@ -47,58 +47,52 @@ class Tree extends THREE.Object3D {
         'use strict';
         this.smallTrunks = new THREE.Object3D();
         this.smallTrunks.position.set(0, bodyY/2, 0);
+        var geometry = new THREE.CylinderGeometry(smallTrunksX/2, smallTrunksX/2, smallTrunksY, 30);
         var color = 0x9f6934;
         this.smallTrunkMaterials.push(new THREE.MeshBasicMaterial({color: color}));
         this.smallTrunkMaterials.push(new THREE.MeshLambertMaterial({color: color}));
         this.smallTrunkMaterials.push(new THREE.MeshPhongMaterial({color: color}));
         this.smallTrunkMaterials.push(new THREE.MeshToonMaterial({color: color}));
         this.smallTrunkMaterials.push(this.smallTrunkMaterials[2]);
-        this.smallBranch1.add(new THREE.Mesh(new THREE.SphereGeometry(cockPitXYZ/2), this.smallTrunkMaterials[2]));
-        this.add(this.cockPit);
-        
+        var smallTrunk1 = new THREE.Mesh(geometry, this.smallTrunkMaterials[2]);
+        var smallTrunk2 = smallTrunk1.clone();
+        var smallTrunk3 = smallTrunk1.clone();
+        smallTrunk1.position.set(4, trunkY, 0);
+        smallTrunk2.position.set(-4, trunkY, 0);
+        smallTrunk3.position.set(1, trunkY+2, -6);
+        smallTrunk3.rotation.z = Math.PI/2;
+        smallTrunk3.rotation.y = -Math.PI/4;
+        smallTrunk1.rotation.z = -Math.PI/4;
+        smallTrunk2.rotation.z = Math.PI/4;
+        this.smallTrunks.add(smallTrunk1, smallTrunk2, smallTrunk3);
+        this.add(this.smallTrunks);
     }
 
-    createSmallBranchs() {
+    createSmallBranches() {
         'use strict';
-        this.bigLight = new THREE.Object3D();
-        this.bigLight.position.set(0, -bodyY/3, 0);
-        var color = 0xFFFFE0;
-        this.bigLightMaterials.push(new THREE.MeshBasicMaterial({color: color}));
-        this.bigLightMaterials.push(new THREE.MeshLambertMaterial({color: color}));
-        this.bigLightMaterials.push(new THREE.MeshPhongMaterial({color: color}));
-        this.bigLightMaterials.push(new THREE.MeshToonMaterial({color: color}));
-        this.bigLightMaterials.push(this.bigLightMaterials[2]);
-        this.bigLight.add(new THREE.Mesh(new THREE.CylinderGeometry(bigLightXZ/2, bigLightXZ/2, bigLightY, 40), this.bigLightMaterials[2]));
-        this.add(this.bigLight);
+        this.smallBranches = new THREE.Object3D();
+        this.smallBranches.position.set(0, -bodyY/3, 0);
+        var geometry = new THREE.SphereGeometry(1);
+        geometry.scale(smallBranchX/2, smallBranchY/2, smallBranchX/2);
 
-        var spotlight = new THREE.SpotLight(0xFFFFFF, 4, 100, Math.PI/10, 0.5);
-        spotlight.position.set(0, -bigLightY/2, 0);
-        spotlight.target.position.set(0, -bigLightY, 0);
-        this.bigLight.add(spotlight);
-        this.bigLight.add(spotlight.target);
-    }
-    createSmallLights() {
-        'use strict';
-        this.smallLights = new THREE.Object3D();
-        this.smallLights.position.set(0, -bodyY/3, 0);
-        var geometry = new THREE.SphereGeometry(smallLightXYZ/2);
-
-        var color = 0xFF7377;
-        this.smallLightsMaterials.push(new THREE.MeshBasicMaterial({color: color}));
-        this.smallLightsMaterials.push(new THREE.MeshLambertMaterial({color: color}));
-        this.smallLightsMaterials.push(new THREE.MeshPhongMaterial({color: color}));
-        this.smallLightsMaterials.push(new THREE.MeshToonMaterial({color: color}));
-        this.smallLightsMaterials.push(this.smallLightsMaterials[2]);
-        var leftLight = new THREE.Mesh(geometry, this.smallLightsMaterials[2]);
-        var rightLight = leftLight.clone();
-        var frontLight = leftLight.clone();
-        var backLight = leftLight.clone();
-        leftLight.position.set(-bigLightXZ, 0, 0);
-        rightLight.position.set(bigLightXZ, 0, 0);
-        frontLight.position.set(0, 0, bigLightXZ);
-        backLight.position.set(0, 0, -bigLightXZ);
-        this.smallLights.add(leftLight, rightLight, frontLight, backLight);
-        this.add(this.smallLights);
+        var color = 0x228B22;
+        this.smallBranchMaterials.push(new THREE.MeshBasicMaterial({color: color}));
+        this.smallBranchMaterials.push(new THREE.MeshLambertMaterial({color: color}));
+        this.smallBranchMaterials.push(new THREE.MeshPhongMaterial({color: color}));
+        this.smallBranchMaterials.push(new THREE.MeshToonMaterial({color: color}));
+        this.smallBranchMaterials.push(this.smallBranchMaterials[2]);
+        var smallBranch1 = new THREE.Mesh(geometry, this.smallBranchMaterials[2]);
+        var smallBranch2 = smallBranch1.clone();
+        var smallBranch3 = smallBranch1.clone();
+        smallBranch1.position.set(-10, trunkY+2*smallTrunksY/3+2, 0);
+        smallBranch2.position.set(10, trunkY+smallTrunksY, 0);
+        smallBranch3.position.set(-smallTrunksX/2-4, trunkY+smallTrunksY/2+2, -smallTrunksY+2);
+        smallBranch1.rotation.z = Math.PI/4;
+        smallBranch2.rotation.z = -Math.PI/5;
+        smallBranch3.rotation.z = -Math.PI/2;
+        smallBranch3.rotation.y = -Math.PI/6;
+        this.smallBranches.add(smallBranch1, smallBranch2, smallBranch3);
+        this.add(this.smallBranches);
     }
 
     move() {
@@ -128,31 +122,29 @@ class Tree extends THREE.Object3D {
     }
 
     changeMaterial(material) {
-        if (material == 0 && this.body.children[0].material != this.bodyMaterials[0]) {
-            this.body.children[0].material = this.bodyMaterials[0];
-            this.cockPit.children[0].material = this.cockPitMaterials[0];
-            this.bigLight.children[0].material = this.bigLightMaterials[0];
-            for (var i = 0; i < this.smallLights.children.length; i++) 
-                this.smallLights.children[i].material = this.smallLightsMaterials[0];
+        if (material == 0 && this.mainTrunk.children[0].material != this.mainTrunkMaterials[0]) {
+            this.mainTrunk.children[0].material = this.mainTrunkMaterials[0];
+            for (var i = 0; i < this.smallTrunks.children.length; i++)
+                this.smallTrunks.children[i].material = this.smallTrunkMaterials[0];
+            for (var i = 0; i < this.smallBranches.children.length; i++) 
+                this.smallBranches.children[i].material = this.smallBranchMaterials[0];
             return;
-        } else if (material == 0 && this.body.children[0].material == this.bodyMaterials[0]) {
-            this.body.children[0].material = this.bodyMaterials[4];
-            this.cockPit.children[0].material = this.cockPitMaterials[4];
-            this.bigLight.children[0].material = this.bigLightMaterials[4];
-            for (var i = 0; i < this.smallLights.children.length; i++)
-                this.smallLights.children[i].material = this.smallLightsMaterials[4];
+        } else if (material == 0 && this.mainTrunk.children[0].material == this.mainTrunkMaterials[0]) {
+            this.mainTrunk.children[0].material = this.mainTrunkMaterials[4];
+            for (var i = 0; i < this.smallTrunks.children.length; i++)
+                this.smallTrunks.children[i].material = this.smallTrunkMaterials[4];
+            for (var i = 0; i < this.smallBranches.children.length; i++)
+                this.smallBranches.children[i].material = this.smallBranchMaterials[4];
             return;
         }
-        this.bodyMaterials[4] = this.bodyMaterials[material];
-        this.cockPitMaterials[4] = this.cockPitMaterials[material];
-        this.bigLightMaterials[4] = this.bigLightMaterials[material];
-        this.smallLightsMaterials[4] = this.smallLightsMaterials[material];
-        this.body.children[0].material = this.bodyMaterials[4];
-        this.cockPit.children[0].material = this.cockPitMaterials[4];
-        this.bigLight.children[0].material = this.bigLightMaterials[4];
-        for (var i = 0; i < this.smallLights.children.length; i++) {
-            this.smallLights.children[i].material = this.smallLightsMaterials[4];
-        }
+        this.mainTrunkMaterials[4] = this.mainTrunkMaterials[material];
+        this.smallTrunkMaterials[4] = this.smallTrunkMaterials[material];
+        this.smallBranchMaterials[4] = this.smallBranchMaterials[material];
+        this.mainTrunk.children[0].material = this.mainTrunkMaterials[4];
+        for (var i = 0; i < this.smallTrunks.children.length; i++)
+            this.smallTrunks.children[i].material = this.smallTrunkMaterials[4];
+        for (var i = 0; i < this.smallBranches.children.length; i++)
+            this.smallBranches.children[i].material = this.smallBranchMaterials[4];
     }
     wireframes() {
         
