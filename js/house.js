@@ -194,7 +194,6 @@ class House extends THREE.Object3D {
 
         geoWalls.setIndex( indWalls );
         geoWalls.setAttribute( 'position', new THREE.Float32BufferAttribute( vertWalls, 3 ) );
-        geoWalls.setAttribute( 'normal', new THREE.Float32BufferAttribute( normWalls, 3 ) );
         geoWalls.computeVertexNormals();
         /***********************************************************
                                 ROOF
@@ -223,7 +222,6 @@ class House extends THREE.Object3D {
 
         geoRoof.setIndex( indRoof );
         geoRoof.setAttribute( 'position', new THREE.Float32BufferAttribute( vertRoof, 3 ) );
-        geoRoof.setAttribute( 'normal', new THREE.Float32BufferAttribute( normRoof, 3 ) );
         geoRoof.computeVertexNormals();
         /***********************************************************
                                 Door
@@ -243,7 +241,6 @@ class House extends THREE.Object3D {
 
         geoDoor.setIndex( indDoor );
         geoDoor.setAttribute( 'position', new THREE.Float32BufferAttribute( vertDoor, 3 ) );
-        geoDoor.setAttribute( 'normal', new THREE.Float32BufferAttribute( normDoor, 3 ) );
         geoDoor.computeVertexNormals();
         /***********************************************************
                             Windows
@@ -277,7 +274,6 @@ class House extends THREE.Object3D {
 
         geoWindows.setIndex( indWindows );
         geoWindows.setAttribute( 'position', new THREE.Float32BufferAttribute( vertWindows, 3 ) );
-        geoWindows.setAttribute( 'normal', new THREE.Float32BufferAttribute( normWindows, 3 ) );
         geoWindows.computeVertexNormals();
 
         /***********************************************************
@@ -331,7 +327,6 @@ class House extends THREE.Object3D {
 
         geoChimney.setIndex( indChimney );
         geoChimney.setAttribute( 'position', new THREE.Float32BufferAttribute( vertChimney, 3 ) );
-        geoChimney.setAttribute( 'normal', new THREE.Float32BufferAttribute( normChimney, 3 ) );
         geoChimney.computeVertexNormals();
     
         // Create meshes for each element
