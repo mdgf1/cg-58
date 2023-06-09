@@ -8,9 +8,9 @@ var cameraFactor = 7;
 
 var ovni, moon, skyDome, ground, house;
 var axisHelper;
-var collision = false, alreadyInside = false;
-var intersectZ = false, intersectX = false;
 var wireframes = false, changedWireframes = false;
+var material0 = false, material1 = false, material2 = false, material3 = false, changedMaterial = false;
+var bigLightOff = false, bigLightsOn = false;
 
 //////////////////////
 /* CREATE CAMERA(S) */
@@ -82,7 +82,11 @@ function update() {
     'use strict';
     orbitalControls.update();
     ovni.move();
-    
+    if (!changedMaterial && (material0 || material1 || material2 || material3)) {
+        ovni.changeMaterials();
+        changedMaterial = true;
+    }
+
     if (!changedWireframes && wireframes) {
         ovni.wireframes();
         house.wireframes();
@@ -174,40 +178,28 @@ function onKeyDown(e) {
         break;
     
     
-    case 54:   // tecla 6
+    case 54:   // tecla 6~
         wireframes = true;
-        break;
-    case 65: //A
-    case 97: //a
-        feetDown = true;
-        break;
-    case 70:  //F
-    case 102: //f
-        headDown = true;
-        break;
-    case 82:  //R
-    case 114: //r
-        headUp = true;
-        break;
-    case 68:  //D
-    case 100: //d
-        armsDown = true;
         break;
     case 69:  //E
     case 101: //e
-        armsUp = true;
+        material2 = true;
         break;
     case 81:  //Q
     case 113: //q
-        feetUp = true;
+        material2 = true;
+        break;
+    case 82:  //R
+    case 114: //r
+        material0 = true;
         break;
     case 83:  //S
     case 115: //s
-        legsDown = true;
+        bigLightOff = true;
         break;
     case 87:  //W
     case 119: //w
-        legsUp = true;
+        material1 = true;
         break;
     }
 }
@@ -241,37 +233,26 @@ function onKeyUp(e) {
         wireframes = false;
         changedWireframes = false;
         break;
-    case 65: //A
-    case 97: //a
-        feetDown = false;
-        break;
-    case 70:  //F
-    case 102: //f
-        headDown = false;
-        break;
-    case 82:  //R
-    case 114: //r
-        headUp = false;
-        break;
-    case 68:  //D
-    case 100: //d
-        armsDown = false;
-        break;
     case 69:  //E
     case 101: //e
-        armsUp = false;
+        material2 = false;
         break;
     case 81:  //Q
     case 113: //q
-        feetUp = false;
+        material2 = false;
+        break;
+    case 82:  //R
+    case 114: //r
+        material0 = false;
+        changedMaterial = false
         break;
     case 83:  //S
     case 115: //s
-        legsDown = false;
+        bigLightOff = false;
         break;
     case 87:  //W
     case 119: //w
-        legsUp = false;
+        material1 = false;
         break;
     }
     
