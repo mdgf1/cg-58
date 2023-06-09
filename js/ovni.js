@@ -74,7 +74,7 @@ class Ovni extends THREE.Object3D {
         this.bigLightMaterials.push(this.bigLightMaterials[2]);
         this.bigLight.add(new THREE.Mesh(new THREE.CylinderGeometry(bigLightXZ/2, bigLightXZ/2, bigLightY, 40), this.bigLightMaterials[2]));
 
-        this.spotlight = new THREE.SpotLight(0xFFFFFF, 4, 100, Math.PI/10, 0.5, 2);
+        this.spotlight = new THREE.SpotLight(0xFFFFFF, 1, 0, 0.6, 0.8);
         this.spotlight.position.set(0, -bigLightY/2, 0);
         this.spotlight.target.position.set(0, -bigLightY, 0);
         this.bigLight.add(this.spotlight);
@@ -170,7 +170,7 @@ class Ovni extends THREE.Object3D {
 
     changeBigLight() {
         if (bigLightOn) 
-            this.spotlight.intensity = 4;
+            this.spotlight.intensity = 1;
         else if (bigLightOff)
             this.spotlight.intensity = 0;
     }

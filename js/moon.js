@@ -22,7 +22,9 @@ class Moon extends THREE.Object3D {
         this.materials.push(new THREE.MeshToonMaterial({ color: color}));
         this.materials.push(this.materials[2]);
         var moon = new THREE.Mesh(geometry, this.materials[2]);
+        var directionalLight = new THREE.DirectionalLight(0xFFFACD, 0.5);
         this.add(moon);
+        this.add(directionalLight);
     }
 
     changeMaterials() {

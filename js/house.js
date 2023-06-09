@@ -68,24 +68,24 @@ class House extends THREE.Object3D {
 
         // Create materials
         var color = 0xF5F5DC;
-        this.wallMaterials.push(new THREE.MeshBasicMaterial({color: color, side: THREE.DoubleSide}));
-        this.wallMaterials.push(new THREE.MeshLambertMaterial({color: color, side: THREE.DoubleSide}));
-        this.wallMaterials.push(new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide}));
-        this.wallMaterials.push(new THREE.MeshToonMaterial({color: color, side: THREE.DoubleSide}));
+        this.wallMaterials.push(new THREE.MeshBasicMaterial({color: color}));
+        this.wallMaterials.push(new THREE.MeshLambertMaterial({color: color}));
+        this.wallMaterials.push(new THREE.MeshPhongMaterial({color: color}));
+        this.wallMaterials.push(new THREE.MeshToonMaterial({color: color}));
         this.wallMaterials.push(this.wallMaterials[2]);
 
         color = 0x0000ff;
-        this.windowDoorMaterials.push(new THREE.MeshBasicMaterial({color: color, side: THREE.DoubleSide}));
-        this.windowDoorMaterials.push(new THREE.MeshLambertMaterial({color: color, side: THREE.DoubleSide}));
-        this.windowDoorMaterials.push(new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide}));
-        this.windowDoorMaterials.push(new THREE.MeshToonMaterial({color: color, side: THREE.DoubleSide}));
+        this.windowDoorMaterials.push(new THREE.MeshBasicMaterial({color: color}));
+        this.windowDoorMaterials.push(new THREE.MeshLambertMaterial({color: color}));
+        this.windowDoorMaterials.push(new THREE.MeshPhongMaterial({color: color}));
+        this.windowDoorMaterials.push(new THREE.MeshToonMaterial({color: color}));
         this.windowDoorMaterials.push(this.windowDoorMaterials[2]);
 
         color = 0xffa500;
-        this.roofMaterials.push(new THREE.MeshBasicMaterial({color: color, side: THREE.DoubleSide}));
-        this.roofMaterials.push(new THREE.MeshLambertMaterial({color: color, side: THREE.DoubleSide}));
-        this.roofMaterials.push(new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide}));
-        this.roofMaterials.push(new THREE.MeshToonMaterial({color: color, side: THREE.DoubleSide}));
+        this.roofMaterials.push(new THREE.MeshBasicMaterial({color: color}));
+        this.roofMaterials.push(new THREE.MeshLambertMaterial({color: color}));
+        this.roofMaterials.push(new THREE.MeshPhongMaterial({color: color}));
+        this.roofMaterials.push(new THREE.MeshToonMaterial({color: color}));
         this.roofMaterials.push(this.roofMaterials[2]);
     
         /***********************************************************
@@ -195,6 +195,7 @@ class House extends THREE.Object3D {
         geoWalls.setIndex( indWalls );
         geoWalls.setAttribute( 'position', new THREE.Float32BufferAttribute( vertWalls, 3 ) );
         geoWalls.setAttribute( 'normal', new THREE.Float32BufferAttribute( normWalls, 3 ) );
+        geoWalls.computeVertexNormals();
         /***********************************************************
                                 ROOF
             **********************************************************/
@@ -223,6 +224,7 @@ class House extends THREE.Object3D {
         geoRoof.setIndex( indRoof );
         geoRoof.setAttribute( 'position', new THREE.Float32BufferAttribute( vertRoof, 3 ) );
         geoRoof.setAttribute( 'normal', new THREE.Float32BufferAttribute( normRoof, 3 ) );
+        geoRoof.computeVertexNormals();
         /***********************************************************
                                 Door
             **********************************************************/
@@ -242,6 +244,7 @@ class House extends THREE.Object3D {
         geoDoor.setIndex( indDoor );
         geoDoor.setAttribute( 'position', new THREE.Float32BufferAttribute( vertDoor, 3 ) );
         geoDoor.setAttribute( 'normal', new THREE.Float32BufferAttribute( normDoor, 3 ) );
+        geoDoor.computeVertexNormals();
         /***********************************************************
                             Windows
             **********************************************************/
@@ -275,6 +278,8 @@ class House extends THREE.Object3D {
         geoWindows.setIndex( indWindows );
         geoWindows.setAttribute( 'position', new THREE.Float32BufferAttribute( vertWindows, 3 ) );
         geoWindows.setAttribute( 'normal', new THREE.Float32BufferAttribute( normWindows, 3 ) );
+        geoWindows.computeVertexNormals();
+
         /***********************************************************
                             Chimney
             **********************************************************/
@@ -324,17 +329,17 @@ class House extends THREE.Object3D {
             indChimney,
             normChimney);
 
-
         geoChimney.setIndex( indChimney );
         geoChimney.setAttribute( 'position', new THREE.Float32BufferAttribute( vertChimney, 3 ) );
         geoChimney.setAttribute( 'normal', new THREE.Float32BufferAttribute( normChimney, 3 ) );
+        geoChimney.computeVertexNormals();
     
         // Create meshes for each element
-        this.walls = new THREE.Mesh(geoWalls, this.wallMaterials[2]);
-        this.roof = new THREE.Mesh(geoRoof, this.roofMaterials[2]);
-        this.door = new THREE.Mesh(geoDoor, this.windowDoorMaterials[2]);
-        this.windows = new THREE.Mesh(geoWindows, this.windowDoorMaterials[2]);
-        this.chimney = new THREE.Mesh(geoChimney, this.windowDoorMaterials[2]);
+        this.walls = new THREE.Mesh(geoWalls, this.wallMaterials[4]);
+        this.roof = new THREE.Mesh(geoRoof, this.roofMaterials[4]);
+        this.door = new THREE.Mesh(geoDoor, this.windowDoorMaterials[4]);
+        this.windows = new THREE.Mesh(geoWindows, this.windowDoorMaterials[4]);
+        this.chimney = new THREE.Mesh(geoChimney, this.windowDoorMaterials[4]);
 
         // Add elements to the scene
         this.add(this.walls);
@@ -379,6 +384,7 @@ class House extends THREE.Object3D {
         this.walls.material = this.wallMaterials[4];
         this.chimney.material = this.windowDoorMaterials[4];
         this.windows.material = this.windowDoorMaterials[4];
+        console.log(this.windows.material);
     }
 
     wireframes() {
