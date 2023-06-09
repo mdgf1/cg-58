@@ -84,6 +84,7 @@ function update() {
     ovni.move();
     if (!changedMaterial && (material0 || material1 || material2 || material3)) {
         ovni.changeMaterials();
+        house.changeMaterials();
         changedMaterial = true;
     }
 
@@ -176,18 +177,16 @@ function onKeyDown(e) {
     case 40:
         down = true;
         break;
-    
-    
-    case 54:   // tecla 6~
+    case 54:   // tecla 6
         wireframes = true;
         break;
     case 69:  //E
     case 101: //e
-        material2 = true;
+        material3 = true;
         break;
     case 81:  //Q
     case 113: //q
-        material2 = true;
+        material1 = true;
         break;
     case 82:  //R
     case 114: //r
@@ -199,7 +198,7 @@ function onKeyDown(e) {
         break;
     case 87:  //W
     case 119: //w
-        material1 = true;
+        material2 = true;
         break;
     }
 }
@@ -228,18 +227,19 @@ function onKeyUp(e) {
     case 40:
         down = false;
         break;
-
     case 54:   // tecla 6
         wireframes = false;
         changedWireframes = false;
         break;
     case 69:  //E
     case 101: //e
-        material2 = false;
+        material3 = false;
+        changedMaterial = false
         break;
     case 81:  //Q
     case 113: //q
-        material2 = false;
+        material1 = false;
+        changedMaterial = false
         break;
     case 82:  //R
     case 114: //r
@@ -252,7 +252,8 @@ function onKeyUp(e) {
         break;
     case 87:  //W
     case 119: //w
-        material1 = false;
+        material2 = false;
+        changedMaterial = false
         break;
     }
     

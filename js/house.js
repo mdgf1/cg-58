@@ -1,5 +1,11 @@
 
 class House extends THREE.Object3D {
+    wall;
+    roof;
+    door;
+    windows;
+    chimney;
+
     wallMaterials = [];
     windowDoorMaterials = [];
     roofMaterials = [];
@@ -14,21 +20,24 @@ class House extends THREE.Object3D {
         // Create materials
         var color = 0xF5F5DC;
         this.wallMaterials.push(new THREE.MeshBasicMaterial({color: color}));
-        this.wallMaterials.push(new THREE.MeshPhongMaterial({color: color}));
         this.wallMaterials.push(new THREE.MeshLambertMaterial({color: color}));
+        this.wallMaterials.push(new THREE.MeshPhongMaterial({color: color}));
         this.wallMaterials.push(new THREE.MeshToonMaterial({color: color}));
+        this.wallMaterials.push(this.wallMaterials[2]);
 
         color = 0x0000ff;
         this.windowDoorMaterials.push(new THREE.MeshBasicMaterial({color: color}));
-        this.windowDoorMaterials.push(new THREE.MeshPhongMaterial({color: color}));
         this.windowDoorMaterials.push(new THREE.MeshLambertMaterial({color: color}));
+        this.windowDoorMaterials.push(new THREE.MeshPhongMaterial({color: color}));
         this.windowDoorMaterials.push(new THREE.MeshToonMaterial({color: color}));
+        this.windowDoorMaterials.push(this.windowDoorMaterials[2]);
 
         color = 0xffa500;
         this.roofMaterials.push(new THREE.MeshBasicMaterial({color: color}));
-        this.roofMaterials.push(new THREE.MeshPhongMaterial({color: color}));
         this.roofMaterials.push(new THREE.MeshLambertMaterial({color: color}));
+        this.roofMaterials.push(new THREE.MeshPhongMaterial({color: color}));
         this.roofMaterials.push(new THREE.MeshToonMaterial({color: color}));
+        this.roofMaterials.push(this.roofMaterials[2]);
     
         /***********************************************************
                                 WALLS
@@ -230,28 +239,65 @@ class House extends THREE.Object3D {
         geoChimney.computeVertexNormals();
 
         // Create meshes for each element
-        const walls = new THREE.Mesh(geoWalls, this.wallMaterials[0]);
-        const roof = new THREE.Mesh(geoRoof, this.roofMaterials[0]);
-        const door = new THREE.Mesh(geoDoor, this.windowDoorMaterials[0]);
-        const windows = new THREE.Mesh(geoWindows, this.windowDoorMaterials[0]);
-        const chimney = new THREE.Mesh(geoChimney, this.windowDoorMaterials[0]);
+        this.walls = new THREE.Mesh(geoWalls, this.wallMaterials[2]);
+        this.roof = new THREE.Mesh(geoRoof, this.roofMaterials[2]);
+        this.door = new THREE.Mesh(geoDoor, this.windowDoorMaterials[2]);
+        this.windows = new THREE.Mesh(geoWindows, this.windowDoorMaterials[2]);
+        this.chimney = new THREE.Mesh(geoChimney, this.windowDoorMaterials[2]);
 
         // Add elements to the scene
-        this.add(walls);
-        this.add(roof);
-        this.add(door);
-        this.add(windows);
-        this.add(chimney);
+        this.add(this.walls);
+        this.add(this.roof);
+        this.add(this.door);
+        this.add(this.windows);
+        this.add(this.chimney);
+    }
+
+    changeMaterials() {
+        if (material0)
+            this.changeMaterial(0);
+        else if (material1)
+            this.changeMaterial(1);
+        else if (material2)
+            this.changeMaterial(2);
+        else if (material3)
+            this.changeMaterial(3);
+    }
+
+    changeMaterial(material) {
+        if (material == 0 && this.roof.material != this.wallMaterials[0]) {
+            this.walls.material = this.wallMaterials[0];
+            this.roof.material = this.roofMaterials[0];
+            this.door.material = this.windowDoorMaterials[0];
+            this.chimney.material = this.windowDoorMaterials[0];
+            this.windows.material = this.windowDoorMaterials[0];
+            return;
+        } else if (material == 0 && this.walls.material == this.wallMaterials[0]) {
+            this.walls.material = this.wallMaterials[4];
+            this.roof.material = this.roofMaterials[4];
+            this.door.material = this.windowDoorMaterials[4];
+            this.chimney.material = this.windowDoorMaterials[4];
+            this.windows.material = this.windowDoorMaterials[0];
+            return;
+        }
+        this.wallMaterials[4] = this.wallMaterials[material];
+        this.roofMaterials[4] = this.roofMaterials[material];
+        this.windowDoorMaterials[4] = this.windowDoorMaterials[material];
+        this.roof.material = this.roofMaterials[4];
+        this.door.material = this.windowDoorMaterials[4];
+        this.walls.material = this.wallMaterials[4];
+        this.chimney.material = this.windowDoorMaterials[4];
+        this.windows.material = this.windowDoorMaterials[4];
     }
 
     wireframes() {
-        for (var i = 0; i < this.wallMaterials.length; i++) {
+        for (var i = 0; i < this.wallMaterials.length - 1; i++) {
             this.wallMaterials[i].wireframe = !this.wallMaterials[i].wireframe;
         }
-        for (var i = 0; i < this.roofMaterials.length; i++) {
+        for (var i = 0; i < this.roofMaterials.length - 1; i++) {
             this.roofMaterials[i].wireframe = !this.roofMaterials[i].wireframe;
         }
-        for (var i = 0; i < this.windowDoorMaterials.length; i++) {
+        for (var i = 0; i < this.windowDoorMaterials.length - 1; i++) {
             this.windowDoorMaterials[i].wireframe = !this.windowDoorMaterials[i].wireframe;
         }
     }
