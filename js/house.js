@@ -13,6 +13,7 @@ class House extends THREE.Object3D {
     constructor() {
         super();
         this.createCasa();
+        this.position.set(0, 5, 0);
     }
 
 
@@ -379,7 +380,6 @@ class House extends THREE.Object3D {
         this.walls.material = this.wallMaterials[4];
         this.chimney.material = this.windowDoorMaterials[4];
         this.windows.material = this.windowDoorMaterials[4];
-        console.log(this.windows.material);
     }
 
     wireframes() {
