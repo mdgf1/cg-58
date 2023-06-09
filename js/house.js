@@ -61,8 +61,6 @@ class House extends THREE.Object3D {
                 indices.push(startIndices + v2,startIndices + v3,startIndices + v4); // face two
             }
         }
-        if(a[1] == 16)
-            console.log(a,b,c,d),console.log(vertices),console.log(indices);
 
     }
 
@@ -358,7 +356,7 @@ class House extends THREE.Object3D {
     }
 
     changeMaterial(material) {
-        if (material == 0 && this.roof.material != this.wallMaterials[0]) {
+        if (material == 0 && this.walls.material != this.wallMaterials[0]) {
             this.walls.material = this.wallMaterials[0];
             this.roof.material = this.roofMaterials[0];
             this.door.material = this.windowDoorMaterials[0];
@@ -370,7 +368,7 @@ class House extends THREE.Object3D {
             this.roof.material = this.roofMaterials[4];
             this.door.material = this.windowDoorMaterials[4];
             this.chimney.material = this.windowDoorMaterials[4];
-            this.windows.material = this.windowDoorMaterials[0];
+            this.windows.material = this.windowDoorMaterials[4];
             return;
         }
         this.wallMaterials[4] = this.wallMaterials[material];
